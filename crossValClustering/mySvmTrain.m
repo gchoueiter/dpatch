@@ -2,7 +2,7 @@ function model = mySvmTrain(labels, features, flags, fullModel)
 % Train a svm and add extra attributes to the model
 %
 % Author: saurabh.me@gmail.com (Saurabh Singh).
-
+keyboard
 orgModel = svmtrain(labels, features, flags);
 model = getMinimalModel(orgModel);
 model.info.numPositives = sum(labels==1);
