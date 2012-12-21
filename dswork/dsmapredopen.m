@@ -59,7 +59,7 @@ function dsmapredopen(njobs,nprocs,submitlocal)
        matlabbin='nice -n 15 matlab';
      else
        %this should point to the matlab binary accessible on worker nodes.
-       matlabbin='/opt/matlab/amd64_f7/7.10/lib/matlab7/bin/matlab';
+	  matlabbin='/local/bin/matlab-r2011b';%'/opt/matlab/amd64_f7/7.10/lib/matlab7/bin/matlab';
      end
      %the actual command run in matlab once everything is set up.
      matlabcmd=['dsdistprocid=' num2str(i) ';addpath(''' dsworkpath ''');dsoutdir=''' ds.sys.outdir ''';dsmapreducer']
@@ -74,6 +74,7 @@ function dsmapredopen(njobs,nprocs,submitlocal)
      % prompt appears along with the standard message "Operation terminated by user during ..." (which should only happen 
      % if the worker receives an interrupt signal--note that there is no way to catch such interrupts in matlab).  When 
      % it sees the prompt, it will send the dsmapreducer command into the fifo to restart the worker.
+%keyboard
      fprintf(fid, '%s\n',['   ( tail -f ' mlpipe ' &  echo $! >&3 ) 3>' distprocdir 'pid' num2str(i) ' | ' matlabbin ' -nodesktop -nosplash -nojvm 2>&1 3>' distprocdir 'matpid' num2str(i) ' | ' dsworkpath '/dskeeprunning.sh "' mlpipe '" "' matlabcmd '" > "' logfile '"' ]);
      %fprintf(fid, '%s\n',['   ( tail -f ' mlpipe ' &  echo $! >&3 ) 3>' distprocdir 'pid' num2str(i) ' | ' matlabbin ' -nodesktop -nosplash -nojvm -singleCompThread 2>&1 3>' distprocdir 'matpid' num2str(i) ' | ' dsworkpath '/dskeeprunning.sh "' mlpipe '"
      fprintf(fid, '%s\n','kill $(<pid)');
@@ -87,10 +88,13 @@ function dsmapredopen(njobs,nprocs,submitlocal)
      if(submitlocal)
        unix(['sleep ' num2str(floor(i/2)) ' && ' tmpOutFName ' &']);
      else
-       logstring = ['-e "' logfileerr '" -o "' logfileout '"']; 
-       qsub_cmd=['/opt/torque/bin/qsub -N dsmapreducer' num2str(i) ' -l nodes=1:ppn=' num2str(nprocs) ' ' logstring ' ' tmpOutFName]
-       ssh_cmd = sprintf(['ssh warp.hpc1.cs.cmu.edu ''%s'''], qsub_cmd)
-       unix(ssh_cmd);
+       logstring = [' -e ' logfileerr ' -o ' logfileout ' ']; 
+       %qsub_cmd=['/opt/torque/bin/qsub -N dsmapreducer' num2str(i) ' -l nodes=1:ppn=' num2str(nprocs) ' ' logstring ' ' tmpOutFName]
+       %ssh_cmd = sprintf(['ssh warp.hpc1.cs.cmu.edu ''%s'''], qsub_cmd);
+       qsub_cmd=['qsub -N dsmapreducer' num2str(i) logstring tmpOutFName]
+       ssh_cmd = sprintf(['''%s'''], qsub_cmd);
+%keyboard
+       unix(qsub_cmd);
      end
   end
   ds.sys.distproc.isopen=1;

@@ -74,7 +74,8 @@ function dssave(matchstr)
     else
       task='save';
     end
-    [savestate,~,respath]=dsrecurse(ds2,[outpath '/ds'],[outpath '/ds'],savestate,matchstr,{'ds'},task,brakidx);
+    %GEN CHANGE
+    [savestate,~,respath]=dsrecurse(ds2,[outpath 'ds'],[outpath 'ds'],savestate,matchstr,{'ds'},task,brakidx);
     respath
     sys.savestate=savestate;
     if(strcmp(task,'savedistr'))

@@ -1,6 +1,6 @@
 %distributed processing settings
 %run in parallel?
-isparallel=0;
+isparallel=1;
 %if isparallel=1, number of parallel jobs
 nprocs=150;
 %if isparallel=1, whether to run on multiple machines or locally
@@ -10,8 +10,8 @@ isdistributed=1;
 global ds;
 myaddpath;
 ds.prevnm=mfilename;
-dssetout(['/home/gen/dpatch/dsout/' ds.prevnm '_out']);
-ds.dispoutpath=['/home/gen/dpatch/dsout/' ds.prevnm '_out/'];
+dssetout(['/home/gen/www/dpatch/' cat_str '/' ds.prevnm '_out']);
+ds.dispoutpath=['/home/gen/www/dpatch/' cat_str '/' ds.prevnm '_out/'];
 %loadimset(7);
 load('dataset15.mat');
 setdataset(imgs, '/data/hays_lab/15_scene_dataset/', '');
@@ -44,9 +44,9 @@ ds.conf.detectionParams = struct( ...
   'fixedDecisionThresh', -1.002);
 
 %pick which images to use out of the dataset
-%% Gen: CHANGES FOR 15 scene version
+
 imgs=ds.imgs{ds.conf.currimset};
-ds.mycity={'bedroom'};%'paris'};
+ds.mycity={cat_str};%'paris'};
 parimgs=find(ismember({imgs.city},ds.mycity));
 toomanyprague=find(ismember({imgs.city},{'prague'})); %there's extra images from prague/london in the datset
 toomanyprague=toomanyprague(randperm(numel(toomanyprague)));
@@ -67,10 +67,11 @@ otherimgs(parsub)=0;
 otherimgs(nycsub)=0;
 otherimgs=find(otherimgs);
 rp=randperm(numel(parimgs));
-% Gen
+%gen change
+keyboard
 parimgs=parimgs(rp(1:150));%2000));%usually 2000 positive images is enough; sometimes even 1000 works.
 rp=randperm(numel(otherimgs));
-% Gen
+%gen change
 otherimgs=otherimgs(rp(1:floor(length(rp)/2)));%8000));
 ds.myiminds=[parimgs(:); otherimgs(:)];
 ds.parimgs=parimgs;

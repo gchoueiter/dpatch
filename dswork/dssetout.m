@@ -7,6 +7,7 @@
 % used on worker nodes in a distribtued processing session.
 function dssetout(outdir)
   global ds;
+%  keyboard
   if(~(outdir(end)=='/'))
     outdir=[outdir '/'];
   end
