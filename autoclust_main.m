@@ -11,7 +11,7 @@ global ds;
 myaddpath;
 ds.prevnm=mfilename;
 dssetout(['/home/gen/www/dpatch/' cat_str '/' ds.prevnm '_out']);
-ds.dispoutpath=['/home/gen/www/dpatch/' cat_str '/' ds.prevnm '_out/'];
+%ds.dispoutpath=['/home/gen/www/dpatch/' cat_str '/' ds.prevnm '_out/'];
 %loadimset(7);
 load('dataset15.mat');
 setdataset(imgs, '/data/hays_lab/15_scene_dataset/', '');
