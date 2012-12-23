@@ -24,4 +24,6 @@ sum(GVARS.job_stat)
 
 %test extract_feature
 extract_feature('imtest', '/home/gen/dpatch/extractFeature/test_out', 5, 0)
-ls test_out
+ls test_out/imtest
+extract_feature('imtest2', '/home/gen/dpatch/extractFeature/test_out', 5, 0)
+ls test_out/imtest2

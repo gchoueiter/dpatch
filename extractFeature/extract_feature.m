@@ -22,9 +22,9 @@ if(strcmp(img_name(end-3), '.'))
     img_name = img_name(1:end-4);
 end
 GVARS.img_name = img_name;
-GVARS.save_path = save_path;
-if(~strcmp(GVARS.save_path(end),'/'))
-    GVARS.save_path = [GVARS.save_path '/'];
+GVARS.save_path = fullfile(save_path,img_name,'/');
+if(~exist(GVARS.save_path, 'dir'))
+    mkdir(GVARS.save_path);
 end
 GVARS.isparallel = isparallel;
 GVARS.njobs = njobs;
@@ -35,9 +35,17 @@ run_jobs();
 %check that output dir is full
 % if there are missing files run calc_patches again.
 ispatchescomplete = check_patches_complete();
+max_retry = 5;
+retry = 1;
 while(~ispatchescomplete)
+    if(retry > max_retry)
+        disp(['extract_feature() failed to complete. Check job log ' ...
+              'to determine the recurring error.']);
+        return;
+    end
     run_jobs();
     ispatchescomplete = check_patches_complete();
+    retry = retry + 1;
 end
 
 disp('dpatch features calculated, maxpooling...');
@@ -144,7 +152,7 @@ for ft = 1:length(tmp_feats)
             mp_feat(r,c) = max(max(cur_feat(r:r+mp_dim-1, c:c+mp_dim-1)));
         end
     end
-    %    keyboard
+    %11    keyboard
     mp_feat = reshape(mp_feat,(rows-mp_dim+1)*(cols-mp_dim+1),1);
     final_feats(ft) = {struct('feat',mp_feat)};
 end
