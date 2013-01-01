@@ -1,6 +1,6 @@
 %distributed processing settings
 %run in parallel?
-isparallel=1;
+isparallel=0;
 %if isparallel=1, number of parallel jobs
 nprocs=150;
 %if isparallel=1, whether to run on multiple machines or locally

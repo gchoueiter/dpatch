@@ -10,11 +10,27 @@ isdistributed=1;
 global ds;
 myaddpath;
 ds.prevnm=mfilename;
-dssetout(['/data/hays_lab/people/gen/discrim_patch_code/dsout/' ds.prevnm '_out']);
-ds.dispoutpath=['/data/hays_lab/people/gen/discrim_patch_code/dsout/' ds.prevnm '_out/'];
+dssetout(['/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/' cat_str ']/'  ds.prevnm '_out']);
+%ds.dispoutpath=[ ds.prevnm '_out/'];
 %loadimset(7);
 load('dataset15.mat');
-setdataset(imgs,'/data/hays_lab/15_scene_dataset','');
+
+%gen change
+%% TODO: need to change 'imgs' so it only contains training images,
+%% i.e. first 150 images from every scene class
+
+scene_cats=unique(arrayfun(@(x) x.city,imgs,'UniformOutput', ...
+                           false));
+imgs_train=[]; 
+for i = 1:length(scene_cats)
+train_inds = find(~arrayfun(@(x) isempty(strfind(x.city, scene_cats{i})), ...
+                     imgs));
+train_inds = train_inds(1:150);
+imgs_train = horzcat(imgs_train, imgs(train_inds));
+end
+imgs=imgs_train;
+
+setdataset(imgs,'/data/hays_lab/15_scene_dataset/','');
 if(isfield(ds.conf.gbz{ds.conf.currimset},'imgsurl'))
   ds.imgsurl=ds.conf.gbz{ds.conf.currimset}.imgsurl;
 end
@@ -46,7 +62,7 @@ ds.conf.detectionParams = struct( ...
 %pick which images to use out of the dataset
 
 imgs=ds.imgs{ds.conf.currimset};
-ds.mycity={'bedroom'};%paris'};% for 15 scene test - bedroom
+ds.mycity={cat_str};%paris'};% for 15 scene test
 parimgs=find(ismember({imgs.city},ds.mycity));
 toomanyprague=find(ismember({imgs.city},{'prague'})); %there's extra images from prague/london in the datset
 toomanyprague=toomanyprague(randperm(numel(toomanyprague)));
@@ -69,11 +85,9 @@ otherimgs=find(otherimgs);
 rp=randperm(numel(parimgs));
 
 % keyboard
-% GEN: this had to be changed bc we're useing 15 scene dataset...
-% there are 216 bedroom images, using 150 for train...
-parimgs=parimgs(rp(1:150));%2000));%usually 2000 positive images is enough; sometimes even 1000 works.
+parimgs=parimgs(rp);%2000));%usually 2000 positive images is enough; sometimes even 1000 works.
 rp=randperm(numel(otherimgs));
-otherimgs=otherimgs(rp(1:floor(length(otherimgs)/2)));%8000));%floor(length(otherimgs)/2)));%
+otherimgs=otherimgs(rp);%8000));%
 ds.myiminds=[parimgs(:); otherimgs(:)];
 ds.parimgs=parimgs;
 
