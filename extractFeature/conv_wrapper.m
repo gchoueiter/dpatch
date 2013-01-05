@@ -9,7 +9,7 @@ function [status] = conv_wrapper(img_name, save_path, patch_num)
     % imsize is the [rows cols] of the image
 
 try
-    [feat, imsize] = TY_conv_func(img, npatch, params);
+    [feat, imsize] = conv_func(img, npatch, params);
 
     save_name = fullfile(save_path, sprintf('%s_dpatch_tmp_feat_%d.mat', img_name, patch_num));
     save(save_name, 'feat', 'imsize');

@@ -56,8 +56,7 @@ final_feats = maxpool(tmp_feats);
 
 %save final feature
 feat = pack_feats(final_feats);
-save_name = fullfile(GVARS.save_path, [img_name ...
-                    '_dpatch_feature.mat']);
+save_name = fullfile(GVARS.save_path, [img_name '.mat']);
 %keyboard
 save(save_name, 'feat');
 
