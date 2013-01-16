@@ -10,8 +10,8 @@ isdistributed=1;
 global ds;
 myaddpath;
 ds.prevnm=mfilename;
-dssetout(['/home/gen/www/dpatch/' cat_str '/' ds.prevnm '_out']);
-%ds.dispoutpath=['/home/gen/www/dpatch/' cat_str '/' ds.prevnm '_out/'];
+dssetout(['/data/hays_lab/people/gen/discrim_patch_code/dsout' ds.prevnm '_out']);
+ds.dispoutpath=['/data/hays_lab/people/gen/discrim_patch_code/dsout' ds.prevnm '_out/'];
 %loadimset(7);
 load('dataset15.mat');
 setdataset(imgs, '/data/hays_lab/15_scene_dataset/', '');
@@ -44,9 +44,9 @@ ds.conf.detectionParams = struct( ...
   'fixedDecisionThresh', -1.002);
 
 %pick which images to use out of the dataset
-
+%% Gen: CHANGES FOR 15 scene version
 imgs=ds.imgs{ds.conf.currimset};
-ds.mycity={cat_str};%'paris'};
+ds.mycity={'bedroom'};%'paris'};
 parimgs=find(ismember({imgs.city},ds.mycity));
 toomanyprague=find(ismember({imgs.city},{'prague'})); %there's extra images from prague/london in the datset
 toomanyprague=toomanyprague(randperm(numel(toomanyprague)));
@@ -67,23 +67,22 @@ otherimgs(parsub)=0;
 otherimgs(nycsub)=0;
 otherimgs=find(otherimgs);
 rp=randperm(numel(parimgs));
-%gen change
-keyboard
+% Gen
 parimgs=parimgs(rp(1:150));%2000));%usually 2000 positive images is enough; sometimes even 1000 works.
 rp=randperm(numel(otherimgs));
-%gen change
+% Gen
 otherimgs=otherimgs(rp(1:floor(length(rp)/2)));%8000));
-ds.myiminds=[parimgs(:); otherimgs(:)];
+ds.myiminds=[parimgs(:); otherimgs(:)];     % ind for all images: par/ not par
 ds.parimgs=parimgs;
 
 'positive'
 numel(parimgs)
 'other'
 numel(otherimgs)
-
+%% tylin - param setting finished, real work starts! 
 %sample random positive "candidate" patches
 step=2;
-ds.isinit=makemarks(ds.myiminds(1:step:end),numel(imgs));
+ds.isinit=makemarks(ds.myiminds(1:step:end),numel(imgs));   % binary indicator vector; choose image
 initInds=find(ds.ispos&ds.isinit);
 if(isparallel&&(~dsmapredisopen()))
     dsmapredopen(nprocs, 1, ~isdistributed);
@@ -122,7 +121,7 @@ dssave();
 if(exist([ds.prevnm '_wait'],'file'))
   keyboard;
 end
-
+%% tylin - finished patches sampling, do nearest neighbors
 %comptue nearest neighbors for each candidate patch.
 npatches=size(ds.centers,1);
 ds.centers=[];
@@ -134,7 +133,7 @@ ds.centers=[];
 %Create a display of the highest-ranked 1200.
 for(i=1:numel(ds.assignednn))
   if(isempty(ds.assignednn{i}))
-    ds.assignednn{i}=ones(npatches,1)*Inf;
+    ds.assignednn{i}=ones(npatches,1)*Inf;  % if the datapoint is not assigned to anything, set this to Inf
   end
 end
 assignednn=cell2mat(ds.assignednn);
@@ -142,7 +141,7 @@ ds.assignednn={};
 nneighbors=100;
 for(j=npatches:-1:1)
   dists=[];
-  [topndist(j,:),ord]=mink(assignednn(j,:),nneighbors);
+  [topndist(j,:),ord]=mink(assignednn(j,:),nneighbors);     % find top 100 closet data points to the cluster center (pos examples)
   for(i=numel(ord):-1:1)
     topnlab(j,i)=ds.ispos(ds.myiminds(ord(i)));
     topnidx(j,i,:)=[reshape([ord(i) ds.assignedidx{ord(i)}(j,:)],1,1,[])];
@@ -282,12 +281,12 @@ ds.batch.round.selClustIts=[];
 ds.batch.nextClust=1;
 ds.batch.finishedDets={};
 ds.batch.nFinishedDets=0;
-
+%% while loop?! 285-432
 while((ds.batch.nextClust<=numel(ds.selectedClust)||size(ds.batch.round.posFeatures,1)>0))
     {'ds.batch.round.curriter','j'};dsup;
     stopfile=[ds.prevnm '_stop'];
     if(exist(stopfile,'file'))
-      %lets you stop training and just output the results so far
+      %lets you stop training and just output the results so far (line for debug) 
       break;
     end
     pausefile=[ds.prevnm '_pause'];
@@ -308,7 +307,7 @@ while((ds.batch.nextClust<=numel(ds.selectedClust)||size(ds.batch.round.posFeatu
 
     %choose the training/validation sets for the current round
     nsets=3;
-    jidx=mod(j-1,nsets)+1;
+    jidx=mod(j-1,nsets)+1;  % flip flop the N and D training and validation set
     jidxp1=mod(j,nsets)+1;
     currtrainset=ds.myiminds([jidx:nsets:numel(ds.parimgs) (numel(ds.parimgs)+j):7:numel(ds.myiminds)]);
     currvalset=ds.myiminds([jidxp1:nsets:numel(ds.parimgs) (numel(ds.parimgs)+j+1):7:numel(ds.myiminds)]);
@@ -316,7 +315,7 @@ while((ds.batch.nextClust<=numel(ds.selectedClust)||size(ds.batch.round.posFeatu
     {'ds.batch.round.tovalon','currvalset'};dsup;
     
     %initialize the SVMs using the random negative patches
-    dsmapreduce('autoclust_initial',{'ds.batch.round.selectedClust'},{'ds.batch.round.firstDet','ds.batch.round.firstResult'});
+    dsmapreduce('autoclust_initial',{'ds.batch.round.selectedClust'},{'ds.batch.round.firstDet','ds.batch.round.firstResult'}); % first model; second output
     dets=VisualEntityDetectors(ds.batch.round.firstDet, ds.conf.params);
     {'ds.batch.round.detectors','dets'};dsup;
 
@@ -331,7 +330,7 @@ while((ds.batch.nextClust<=numel(ds.selectedClust)||size(ds.batch.round.posFeatu
     alpha = 0.71;
     if(~dsfield(ds,'batch','round','mineddetectors'))
       dsdelete('ds.batch.round.negmin');
-      while(currentInd<=maxElements)
+      while(currentInd<=maxElements)    % negative mining in while loop for training classifier
         imgsPerIter = floor(startImgsPerIter * 2^((iter - 1)*alpha));
         finInd = min(currentInd + imgsPerIter - 1, maxElements);
         {'ds.batch.round.negmin.iminds','allnegs(currentInd:finInd)'};dsup;
@@ -399,7 +398,7 @@ while((ds.batch.nextClust<=numel(ds.selectedClust)||size(ds.batch.round.posFeatu
     dsmv('ds.bestbin_topn','ds.bestbin');  
     prepbatchwisebestbin(dispdets,j+2,100,[1:10 15:7:100]);
     dispres_discpatch;
-    dsmv('ds.bestbin','ds.bestbin_topn');
+    dsmv('ds.bestbin','ds.bestbin_topn');   % save current images
     dssave;
     ds.bestbin_topn.alldiscpatchimg=cell(size(ds.bestbin_topn.alldiscpatchimg));
 
