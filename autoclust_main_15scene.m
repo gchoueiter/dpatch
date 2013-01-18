@@ -1,8 +1,10 @@
+
+% NOTE: to use this script, set cat_str to the desired category label first.
 %distributed processing settings
 %run in parallel?
 isparallel=0;
 %if isparallel=1, number of parallel jobs
-nprocs=150;
+nprocs=50;
 %if isparallel=1, whether to run on multiple machines or locally
 isdistributed=1;
 
@@ -10,10 +12,11 @@ isdistributed=1;
 global ds;
 myaddpath;
 ds.prevnm=mfilename;
-dssetout(['/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/' cat_str ']/'  ds.prevnm '_out']);
+dssetout(['/data/hays_lab/finder/Discriminative_Patch_Discovery/discovered_categories/' cat_str '/'  ds.prevnm '_out']);
 %ds.dispoutpath=[ ds.prevnm '_out/'];
 %loadimset(7);
-load('dataset15.mat');
+%% NOTE: this should be changed to the correct dataset also
+load('dataset15.mat'); 
 
 %gen change
 %% TODO: need to change 'imgs' so it only contains training images,
@@ -133,7 +136,7 @@ ds.centers=bsxfun(@rdivide,bsxfun(@minus,ds.initFeats,mean(ds.initFeats,2)),sqrt
 ds.selectedClust=1:size(ds.initFeats,1);
 ds.assignedClust=ds.selectedClust;
 dssave();
-
+%%%%%%% up to here the parallel jobs work
 if(exist([ds.prevnm '_wait'],'file'))
   keyboard;
 end
@@ -143,7 +146,7 @@ npatches=size(ds.centers,1);
 ds.centers=[];
 dsmapreduce('autoclust_assignnn2',{'ds.myiminds'},{'ds.assignednn','ds.assignedidx','ds.pyrscales','ds.pyrcanosz'});
 ds.centers=[];
-
+%%%%%%here
 
 %Sort the candidate patches by the percentage of top 20 nearest neighbors that come from positive set.
 %Create a display of the highest-ranked 1200.

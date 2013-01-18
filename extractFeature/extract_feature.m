@@ -1,34 +1,80 @@
 % gen
 %calculates dpatch feature
 
-function extract_feature(img_name, save_path, njobs, isparallel, log_path)
+function extract_feature(img_name, img_path, save_path, njobs, isparallel, log_path)
+
+% there are conflicting versions of some files, so this explicitly
+% includes the correct versions
+addpath('../');
+addpath(genpath('../dswork'));
+addpath(genpath('../crossValClustering'));
+addpath(genpath('../hog'));
+addpath(genpath('../extractFeature'));
 
 %GVARS is a struct that holds variables used in the functions below
 global GVARS
 
-if nargin < 5
+if nargin < 6
     log_path ='.';
 end
 
+GVARS.save_path = save_path;
+
 % variable that save busy state of jobs (0-free, 1-busy)
-GVARS.job_stat = zeros(njobs,1);
+GVARS.rand = sprintf('%8d',floor(rand(1)*1e8));
 GVARS.njobs = njobs;
-%% TODO: load info about where dpatches are and how many there are
-GVARS.npatches = 10;
-GVARS.patch_path = '.';
+%% TODO: load info about dpatch models
+GVARS.npatch_fname = '/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat';
 
-if(strcmp(img_name(end-3), '.'))
+% load the dpatch library
+detectors = load(GVARS.npatch_fname);
+detectors = detectors.data;
+GVARS.npatch = detectors.firstLevModels;
+params = struct( ...
+  'imageCanonicalSize', 400,...% images are resized so that their smallest dimension is this size.
+  'patchCanonicalSize', {[80 80]}, ...% patches are extracted at this size.  Should be a multiple of sBins.
+  'scaleIntervals', 8, ...% number of levels per octave in the HOG pyramid 
+  'sBins', 8, ...% HOG sBins parameter--i.e. the width in height (in pixels) of each cell
+  'useColor', 1, ...% include a tiny image (the a,b components of the Lab representation) in the patch descriptor
+  'patchOverlapThreshold', 0.6, ...%detections (and random samples during initialization) with an overlap higher than this are discarded.
+  'svmflags', '-s 0 -t 0 -c 0.1');
+GVARS.params_fname = [GVARS.save_path 'params.mat'];
+save(GVARS.params_fname, 'params');
 
-    img_name = img_name(1:end-4);
-end
+GVARS.detectionParams = struct( ...
+  'selectTopN', false, ...
+  'useDecisionThresh', true, ...
+  'overlap', 0.4, ...% detections with overlap higher than this are discarded.
+  'fixedDecisionThresh', -1.002);
+
+%GVARS.img = im2double(imread([img_path img_name]));
+GVARS.img_path = img_path;
+%if(strcmp(img_name(end-3), '.'))
+%    img_name = img_name(1:end-4);
+%end
 GVARS.img_name = img_name;
-GVARS.save_path = fullfile(save_path,img_name,'/');
+
+GVARS.save_path = fullfile(save_path,img_name(1:end-4),'/');
 if(~exist(GVARS.save_path, 'dir'))
     mkdir(GVARS.save_path);
 end
+
+last_stroke = strfind(GVARS.img_name, '/');
+last_stroke = last_stroke(end);
+save_name = fullfile(GVARS.save_path, [GVARS.img_name(last_stroke:end-4) '.mat']);
+
+if(exist(save_name, 'file'))
+    disp(['this dpatch feature already calculated- ' save_name]);
+    return;
+end
+
 GVARS.isparallel = isparallel;
 GVARS.njobs = njobs;
 GVARS.log_path = log_path;
+
+%params for using spatial pyramid and maxpool or bow
+%if GVARS.maxpool is false, then bag of words will be used
+GVARS.maxpool = 0;
 
 run_jobs();
 
@@ -47,16 +93,22 @@ while(~ispatchescomplete)
     ispatchescomplete = check_patches_complete();
     retry = retry + 1;
 end
+pause(1.5);
 
-disp('dpatch features calculated, maxpooling...');
-
+disp('dpatch features calculated, packing features...');
+%keyboard
 %load all features and do maxpool
 tmp_feats = load_tmp_feats();
-final_feats = maxpool(tmp_feats);
+
+if(GVARS.maxpool)
+    final_feats = maxpool(tmp_feats);
+else
+    final_feats = bow(tmp_feats);
+end
 
 %save final feature
 feat = pack_feats(final_feats);
-save_name = fullfile(GVARS.save_path, [img_name '.mat']);
+
 %keyboard
 save(save_name, 'feat');
 
@@ -66,15 +118,15 @@ delete_tmp_files();
 
 end
 
-function [free_job_id] = check_jobs_avail()
+function [free_job_stat] = check_jobs_avail()
 global GVARS
 
-if(sum(GVARS.job_stat) >= GVARS.njobs)
-    free_job_id = 0;
-else
-    free_inds = find(GVARS.job_stat == 0);
-    free_job_id = free_inds(1);
-end
+%check qstat for number of jobs running with name ['dp' GVARS.rand]
+%if less than GVARS.njobs, return 1
+[status,running_jobs] = unix(['qstat |grep ' ['dp' GVARS.rand] ' |wc -l']);
+running_jobs = str2double(running_jobs);
+free_job_stat = running_jobs < GVARS.njobs;
+
 
 
 end
@@ -84,17 +136,17 @@ function run_jobs()
 global GVARS
 
 %for all the dpatches, while there are jobs
-for p = 1:GVARS.npatches
-   cur_job = check_jobs_avail();
-   while(cur_job == 0)
-       sleep(0.5); % TODO: is this a good amount of time?
-       cur_job = check_jobs_avail();
+
+for p = 1:length(GVARS.npatch.info)
+   job_avail = check_jobs_avail();
+   while(job_avail == 0)
+       pause(0.5); % TODO: is this a good amount of time?
+       job_avail = check_jobs_avail();
    end
    
    % do the conv. func
-   % save to result
-   launch_dpatch_eval( p, cur_job);
-
+   % save to result 
+   launch_dpatch_eval( p); 
 end
 
 end
@@ -107,7 +159,7 @@ num_patches_complete = sum(~(cell2mat(arrayfun(@(x) isempty(strfind(x.name, 'dpa
                         dir(GVARS.save_path), 'UniformOutput', ...
                                             false))));
 
-if(num_patches_complete == GVARS.npatches)
+if(num_patches_complete == length(GVARS.npatch.info))
     status = 1;
 else
     status = 0;
@@ -132,6 +184,8 @@ end
 
 end
 
+%% TODO: this function is all kinds of messed up
+%% for now, I'm using simple bow instead, will come back to fix this
 function [final_feats] = maxpool(tmp_feats)
 global GVARS
 mp_dim = 2;
@@ -145,6 +199,9 @@ for ft = 1:length(tmp_feats)
     %expecting the feature to be a row vector of size
     %[rows*cols,1], so for convenience I'm reshaping it. This may
     %not be a fast operation, so maybe I'll change it later.
+    %%TODO: change this bc the output of conv_func isn't quite like
+    %%this
+keyboard
     cur_feat = reshape(tmp_feats{ft}.feat, tmp_feats{ft}.imsize);
     for r = 1:rows-mp_dim+1
         for c = 1:cols-mp_dim+1
@@ -157,6 +214,18 @@ for ft = 1:length(tmp_feats)
 end
 end
 
+
+% Simple Bag of Words with no spatial pyramid
+function [final_feat] = bow(tmp_feats)
+global GVARS
+
+for pylvl = 1
+    for ft = 1:length(tmp_feats)
+        count = numel(find(tmp_feats{ft}.feat.svmout{pylvl} > GVARS.detectionParams.fixedDecisionThresh));
+        final_feat(ft) = {struct('feat',count)};
+    end
+end
+end
 
 function [feat] = pack_feats(final_feats)
 global GVARS
@@ -174,6 +243,11 @@ function delete_tmp_files()
 global GVARS
 
 rm_cmd = ['rm -f ' GVARS.save_path '*dpatch_tmp_feat*'];
+unix(rm_cmd);
+%sometimes everything doesn't get deleted
+pause(1);
+unix(rm_cmd);
+rm_cmd = ['rm -f ' GVARS.params_fname];
 unix(rm_cmd);
 
 end

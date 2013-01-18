@@ -6,6 +6,7 @@ function pyramid = constructFeaturePyramid(data, params, imgsHome, levels)
 if nargin < 4
   levels = [];
 end
-imPaths = getImagePaths(data, imgsHome);
-pyramid = constructFeaturePyramidForImg(imPaths{1}, params, levels);
+%imPaths = getImagePaths(data, imgsHome);
+%pyramid = constructFeaturePyramidForImg(imPaths{1}, params, levels);
+pyramid = constructFeaturePyramidForImg(data, params, levels);
 end

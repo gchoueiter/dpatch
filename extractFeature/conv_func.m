@@ -1,15 +1,24 @@
-% tylin
-function [feat, imsize] = conv_func(img, npatch, params)
+% this is a slightly different version of TY_conv_func
+%  This runs the conv_func on the input image with the dpatch
+%  specified by patch_ind
+function [feat, imsize] = conv_func(img, imgsHome, npatch, patch_ind, params);
 %   img:    the input image
-%   npatch: n models
+%   npatch: n dpatch models
+%   patch_ind: index of patch to use from npatch
 %   params: the params from DPatch discovery code
-global ds;
+
+global ds; 
+
+
+% This is the test case
 if nargin == 0
     %% load test model
-    img = im2double(imread('C:\Users\tsungyi\Documents\GitHub\dpatch\15_scene_dataset\store\image_0010.jpg'));
-    figure(2)
-    imshow(img)
-    
+    img = im2double(imread('/data/hays_lab/15_scene_dataset/store/image_0010.jpg'));
+    %figure(2)
+    %imshow(img)
+    disp('proof of img');
+    img(1:2,1:2,:)
+
     %parameters for Saurabh's code
     params= struct( ...
       'imageCanonicalSize', 400,...% images are resized so that their smallest dimension is this size.
@@ -30,67 +39,24 @@ if nargin == 0
     
     numLevel = params.numLevel;
     
-    detectors = load('detectors.mat'); % detector can be found at ds.batch.round{k}.detectors.mat
+    detectors = load('/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat');
+%load('detectors.mat'); % detector can be found at ds.batch.round{k}.detectors.mat
     detectors = detectors.data;
     npatch = detectors.firstLevModels;
-    
+    patch_ind = 1;
 end
 
-% dets = detectors.detectPresenceInImg(img);
-tic
+feats = constructFeaturePyramid(img, params);  % reuse the code from dpatch 
 
-feats = constructFeaturePyramid(img, params);  % reuse the code from dpatch    
-for numDet = 1 : 600
+for numDet = patch_ind
+    %keyboard
     w = reshape(full(npatch.w(numDet,:)), [8,8,33]);  % current patch discovery code has 31 (hog) + 2 (color) dims features
     rho = npatch.rho(numDet);
-%     feats = constructFeaturePyramidForImg(img, params, 1:numLevel);  % reuse the code from dpatch
     numDim = size(feats.features{1}, 3);
 
-    % sanity check
-%     [features, levels, indexes, gradsums] = unentanglePyramid(feats, params.patchCanonicalSize);
-    
-    % %% compute template model and feature pyramid from dpatch code
-    % 
-    % % from dpatch code
-    % ds.conf.params = params;
-    % detectionParams = struct( ...
-    %           'selectTopN', false, ...
-    %           'useDecisionThresh', true, ...
-    %             'overlap', .5,...%collatedDetector.params.overlapThreshold, ...
-    %               'fixedDecisionThresh', -.7,...
-    %               'removeFeatures',1);
-    % detections = getDetectionsForEntDets(detectors.firstLevModels, feat, ...
-    %     params.patchCanonicalSize, detectionParams,img);
-    % % detections = getDetectionsForEntDets(detectors.firstLevel, pyra, ...
-    % %     params.patchCanonicalSize, detectionParams,im);
-    % % 
-    % % results.firstLevel = constructResults(detections, ...
-    % %   detectionParams.removeFeatures);
 
     %% tylin's detection
-%     w_sum = sum(w(:));
     numDim = size(w, 3);
-%     % normalize feature
-%     % dpatch code normalizes feature by mean subtraction and variance
-%     % normalization of 8x8x33 features
-%     % we compute mean (mu) and standard deviation (sigma) of each patch in
-%     % input image
-%     for lev = 1 : numLevel
-%         row = size(feats.features{lev}, 1);
-%         col = size(feats.features{lev}, 2);
-%         % use convolution to compute mean and var
-%         X = zeros(row, col);
-%         X2 = zeros(row, col);
-%         for i = 1 : numDim
-%             X = X + conv2(feats.features{lev}(:,:, i), ones(8,8) * (1/64) * (1/numDim), 'same');
-%             X2 = X2 + conv2(feats.features{lev}(:,:, i).^2, ones(8,8) * (1/64) * (1/numDim), 'same');
-%         end
-%         X_std = sqrt(X2 - X.^2);
-%         mu{lev} = X;
-%     %     sigma{lev} = (X_std * (8*8*numDim) );
-%         sigma{lev} = X_std ;
-%     end
-
     % conv between the svm model and features in pyramid
     
     for lev = 1 : length(feats.scales)
@@ -101,13 +67,13 @@ for numDet = 1 : 600
         for i = 1 : numDim
             res{lev} = res{lev} + conv2(feats.features{lev}(:,:,i), w(:,:, i), 'same');
         end
-%         res{lev} = (res{lev} - w_sum*mu{lev})./ sigma{lev} - rho * ones(size(res{lev}));
+
         res{lev} = res{lev} - rho * ones(size(res{lev}));
     end
     
     % output feat:
     % feat{# of det}.svmout{# of pyramid level}
-    feat{numDet}.svmout = res;
+    feat.svmout = res;
     
 %     % visualization
 %     % comment this when it is ready to run
@@ -124,7 +90,9 @@ for numDet = 1 : 600
 %     colorbar()
 %     wait = waitforbuttonpress;
 end
-toc
+
+
 feat.scales = feats.scales;
+imsize = size(img);
 
 end

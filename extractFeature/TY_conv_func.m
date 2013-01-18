@@ -5,10 +5,13 @@ function [feat, imsize] = TY_conv_func(img, npatch, params);
 global ds;
 if nargin == 0
     %% load test model
-    img = im2double(imread('C:\Users\tsungyi\Documents\GitHub\dpatch\15_scene_dataset\store\image_0010.jpg'));
-    figure(2)
-    imshow(img)
-    
+    img_name = '/data/hays_lab/15_scene_dataset/store/image_0010.jpg';
+    img = im2double(imread('/data/hays_lab/15_scene_dataset/store/image_0010.jpg'));
+    %figure(2)
+    %imshow(img)
+    disp('proof of img');
+    img(1:2,1:2,:)
+
     %parameters for Saurabh's code
     params= struct( ...
       'imageCanonicalSize', 400,...% images are resized so that their smallest dimension is this size.
@@ -29,7 +32,8 @@ if nargin == 0
     
     numLevel = params.numLevel;
     
-    detectors = load('detectors.mat'); % detector can be found at ds.batch.round{k}.detectors.mat
+    detectors = load('/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat');
+%load('detectors.mat'); % detector can be found at ds.batch.round{k}.detectors.mat
     detectors = detectors.data;
     npatch = detectors.firstLevModels;
     
@@ -38,8 +42,9 @@ end
 % dets = detectors.detectPresenceInImg(img);
 tic
 
-feats = constructFeaturePyramid(img, params);  % reuse the code from dpatch    
+feats = constructFeaturePyramid(img,  params);  % reuse the code from dpatch    
 for numDet = 1 : 600
+
     w = reshape(full(npatch.w(numDet,:)), [8,8,33]);  % current patch discovery code has 31 (hog) + 2 (color) dims features
     rho = npatch.rho(numDet);
 %     feats = constructFeaturePyramidForImg(img, params, 1:numLevel);  % reuse the code from dpatch
