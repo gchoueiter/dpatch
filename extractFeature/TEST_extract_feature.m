@@ -21,10 +21,10 @@ GVARS.log_path = '/home/gen/dpatch/extractFeature/test_log/';
 %disp('this should be 0');
 %sum(GVARS.job_stat)
 
-
+npatch_fname = '/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat';
 %test extract_feature
 img_name2 = 'store/image_0151.jpg';
-img_path = '/data/hays_lab/15_scene_dataset/';
+img_path = '/data/hays_lab/15_scene_dataset/'; 
 img_name = 'store/image_0152.jpg';
 img_name3 = 'CALsuburb/image_0151.jpg';
 % tic
@@ -72,16 +72,16 @@ disp(sprintf('%d dpatches fired on image %s', sum(feat3.feat), ...
 % run parallel extraction version, see if the features are the same
 res_path = '/home/gen/dpatch/extractFeature/test_out/parallel/';
 tic
-extract_feature(img_name, img_path, res_path, 300, 1, ['/home/gen/' ...
+extract_feature(img_name, img_path, res_path, npatch_fname, 300, 1, ['/home/gen/' ...
                 'dpatch/extractFeature/test_log/'])
 evaltime(1) = toc;
 
 tic
-extract_feature(img_name2, img_path, res_path, 300, 1, ['/home/gen/' ...
+extract_feature(img_name2, img_path, res_path, npatch_fname,300, 1, ['/home/gen/' ...
                 'dpatch/extractFeature/test_log/'])
 evaltime(2) = toc;
 tic
-extract_feature(img_name3, img_path, res_path, 300, 1, ['/home/gen/' ...
+extract_feature(img_name3, img_path, res_path, npatch_fname,300, 1, ['/home/gen/' ...
                 'dpatch/extractFeature/test_log/'])
 evaltime(3) = toc;
 % check that features for imgs 1 2 3 are not the same

@@ -12,7 +12,9 @@ for i = 1:length(imgs)
     if(~exist(feat_save_path, 'file'))        
         switch feat_name
             case 'dpatch'
-                extract_feature(imgs(i).fullname(1:end-4), fullfile(sc.feat_path, feat_name), sc.njobs, sc.isparallel, sc.log_path);
+                extract_feature(imgs(i).fullname(1:end-4), ...
+                                fullfile(sc.feat_path, feat_name), ...
+                                sc.npatch_fname, sc.njobs, sc.isparallel, sc.log_path);
         end        
     end
     

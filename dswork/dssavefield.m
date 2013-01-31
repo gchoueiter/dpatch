@@ -1,6 +1,5 @@
 % Author: Carl Doersch (cdoersch at cs dot cmu dot edu)
 function [savestate respath]=dssavefield(f,fnam,basedir,currpath,savestate,brakidx,task,checksaves)
-%keyboard
 %currpath and savestate are for the parent directory/struct of the target field
 respath={};
 movesonly=0;

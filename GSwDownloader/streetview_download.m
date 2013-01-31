@@ -12,6 +12,9 @@
 
 myaddpath;
 
+%run jobs in parallel or in single-threaded mode?
+runparallel=0;
+
 %set the number of parallel jobs
 nparallel=8;
 
@@ -38,7 +41,7 @@ ds.panoids{1}={};
   [s un used]=textread([dfname],'%s %s %s');
   ds.panoids{1}=[ds.panoids{1} s'];
 %end
-if(~dsmapredisopen())
+if(runparallel && (~dsmapredisopen()))
   dsmapredopen(nparallel, 1, ~isdistributed);
 end
 ds.panonums=0:(numel(ds.panoids{1})-1);
@@ -66,6 +69,8 @@ dsmapreduce(['myaddpath;' ...
              'dsload(''ds.panoids'');'...
              'ds.panoflag{dsidx}=panocutout(ds.panoimg{dsidx},ds.panonums(dsidx))']...
              ,{'ds.panonums','ds.panoimg'},{'ds.panoflag'},struct('noloadresults',true));
-dsmapredclose;
+if(dsmapredisopen())
+  dsmapredclose;
+end
 setlabel;
 return;

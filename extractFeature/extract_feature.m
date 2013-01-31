@@ -1,7 +1,7 @@
 % gen
 %calculates dpatch feature
 
-function extract_feature(img_name, img_path, save_path, njobs, isparallel, log_path)
+function extract_feature(img_name, img_path, save_path, npatch_fname, njobs, isparallel, log_path)
 
 % there are conflicting versions of some files, so this explicitly
 % includes the correct versions
@@ -24,7 +24,9 @@ GVARS.save_path = save_path;
 GVARS.rand = sprintf('%8d',floor(rand(1)*1e8));
 GVARS.njobs = njobs;
 %% TODO: load info about dpatch models
-GVARS.npatch_fname = '/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat';
+%GVARS.npatch_fname =
+%'/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat';
+GVARS.npatch_fname = npatch_fname;
 
 % load the dpatch library
 detectors = load(GVARS.npatch_fname);
@@ -100,6 +102,7 @@ disp('dpatch features calculated, packing features...');
 %load all features and do maxpool
 tmp_feats = load_tmp_feats();
 
+%% TODO: this part should get moved to conv_wrapper
 if(GVARS.maxpool)
     final_feats = maxpool(tmp_feats);
 else
@@ -115,7 +118,7 @@ save(save_name, 'feat');
 %delete temp files
 delete_tmp_files();
 
-
+disp('dpatch feature calculated!');
 end
 
 function [free_job_stat] = check_jobs_avail()
@@ -123,11 +126,12 @@ global GVARS
 
 %check qstat for number of jobs running with name ['dp' GVARS.rand]
 %if less than GVARS.njobs, return 1
-[status,running_jobs] = unix(['qstat |grep ' ['dp' GVARS.rand] ' |wc -l']);
-running_jobs = str2double(running_jobs);
+[status,running_jobs_str] = unix(['qstat |grep ' ['dp' GVARS.rand] ' |wc -l']);
+running_jobs = str2double(running_jobs_str);
+%[status,running_jobs_str] = unix(['qstat -s p |grep ' ['dp' GVARS.rand] ' |wc -l']);
+%running_jobs = running_jobs + str2double(running_jobs_str);
+
 free_job_stat = running_jobs < GVARS.njobs;
-
-
 
 end
 
@@ -245,8 +249,13 @@ global GVARS
 rm_cmd = ['rm -f ' GVARS.save_path '*dpatch_tmp_feat*'];
 unix(rm_cmd);
 %sometimes everything doesn't get deleted
-pause(1);
-unix(rm_cmd);
+[~,r] = unix(['ls ' GVARS.save_path '* | wc -l']);
+r = str2double(r);
+while(r > 1)
+    unix(rm_cmd);
+    [~,r] = unix(['ls ' GVARS.save_path '* | wc -l']);
+    r = str2double(r);
+end
 rm_cmd = ['rm -f ' GVARS.params_fname];
 unix(rm_cmd);
 

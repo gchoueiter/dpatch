@@ -15,6 +15,7 @@ sc.kernel_path = fullfile(sc.save_path, 'kernels/');
 sc.svm_path = fullfile(sc.save_path, 'svms/');
 sc.dataset = '/home/gen/dpatch/dataset15.mat';
 load(sc.dataset);
+sc.npatch_fname = '/home/gen/dpatch/detectors15.mat';
 % include libsvm for training svms
 addpath(genpath('/home/gen/libsvm-mat-3.0-1'));
 

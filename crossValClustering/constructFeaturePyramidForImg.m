@@ -21,13 +21,13 @@ if nargin < 3 || isempty(levels)
   levels = 1 : numLevels;
 end
 if(dsbool(params,'useColor'))
-  im2=RGB2Lab(I).*.0025;%im).*.0025;
+  im2=RGB2Lab(I).*.0025;
 end
 if(dsbool(params,'useColorHists'))
-  im2=RGB2Lab(I);%im);
+  im2=RGB2Lab(I);
 end
 if(dsbool(params,'patchOnly'))
-  im2=rgb2gray(I);%im);
+  im2=rgb2gray(I);
 end
 pyramidLevs = cell(1, numLevels);
 histbin=-100:20:100;

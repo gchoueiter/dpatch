@@ -2,9 +2,9 @@
 % NOTE: to use this script, set cat_str to the desired category label first.
 %distributed processing settings
 %run in parallel?
-isparallel=0;
+isparallel=1;
 %if isparallel=1, number of parallel jobs
-nprocs=50;
+nprocs=1000;
 %if isparallel=1, whether to run on multiple machines or locally
 isdistributed=1;
 
@@ -12,7 +12,8 @@ isdistributed=1;
 global ds;
 myaddpath;
 ds.prevnm=mfilename;
-dssetout(['/data/hays_lab/finder/Discriminative_Patch_Discovery/discovered_categories/' cat_str '/'  ds.prevnm '_out']);
+dssetout(['/data/hays_lab/finder/Discriminative_Patch_Discovery/try_parallel/' cat_str '/'  ds.prevnm '_out']);
+%['/data/hays_lab/finder/Discriminative_Patch_Discovery/discovered_categories/' cat_str '/'  ds.prevnm '_out']);
 %ds.dispoutpath=[ ds.prevnm '_out/'];
 %loadimset(7);
 %% NOTE: this should be changed to the correct dataset also
@@ -67,23 +68,12 @@ ds.conf.detectionParams = struct( ...
 imgs=ds.imgs{ds.conf.currimset};
 ds.mycity={cat_str};%paris'};% for 15 scene test
 parimgs=find(ismember({imgs.city},ds.mycity));
-toomanyprague=find(ismember({imgs.city},{'prague'})); %there's extra images from prague/london in the datset
-toomanyprague=toomanyprague(randperm(numel(toomanyprague)));
-toomanyprague=toomanyprague(1001:end);
-toomanylon=find(ismember({imgs.city},{'london'}));
-toomanylon=toomanylon(randperm(numel(toomanylon)));
-toomanylon=toomanylon(1001:end);
-parsub=find(ismember({imgs.city},{'paris_sub'}));
-nycsub=find(ismember({imgs.city},{'nyc_sub'}));
 
 ds.ispos=zeros(1,numel(imgs));
 ds.ispos(parimgs)=1;
 otherimgs=ones(size(imgs));
 otherimgs(parimgs)=0;
-otherimgs(toomanyprague)=0;
-otherimgs(toomanylon)=0;
-otherimgs(parsub)=0;
-otherimgs(nycsub)=0;
+
 otherimgs=find(otherimgs);
 rp=randperm(numel(parimgs));
 
@@ -136,7 +126,7 @@ ds.centers=bsxfun(@rdivide,bsxfun(@minus,ds.initFeats,mean(ds.initFeats,2)),sqrt
 ds.selectedClust=1:size(ds.initFeats,1);
 ds.assignedClust=ds.selectedClust;
 dssave();
-%%%%%%% up to here the parallel jobs work
+
 if(exist([ds.prevnm '_wait'],'file'))
   keyboard;
 end
@@ -146,7 +136,7 @@ npatches=size(ds.centers,1);
 ds.centers=[];
 dsmapreduce('autoclust_assignnn2',{'ds.myiminds'},{'ds.assignednn','ds.assignedidx','ds.pyrscales','ds.pyrcanosz'});
 ds.centers=[];
-%%%%%%here
+%%%%%%% up to here the parallel jobs work
 
 %Sort the candidate patches by the percentage of top 20 nearest neighbors that come from positive set.
 %Create a display of the highest-ranked 1200.
@@ -509,7 +499,7 @@ for(k=1:numel(disptype))
     detsimpletmp=[detsimpletmp tmpdetsfordetr];
     switch(disptype{k})
     case('overallcounts')
-      counts(i,1)=sum(ds.ispos([tmpdetsfordetr.imidx]));%ismember({ds.imgs{ds.conf.currimset}([tmpdetsfordetr.imidx]).city},citiestogen));
+      counts(i,1)=sum(ds.ispos([tmpdetsfordetr.imidx]));
       counts(i,2)=numel(tmpdetsfordetr)-counts(i,1);
     case('posterior')
       counts(i,1)=sum(posCounts{1}(i,:));
@@ -524,18 +514,17 @@ for(k=1:numel(disptype))
     [~,detord]=sort(post,'descend');
   end
   [overl groups affinities]=findOverlapping(topNall(detord),struct('findNonOverlap',1));
-  %detord=detord(overl)
   dsload('ds.selectedClust','recheck');
-  resSelectedClust=ds.selectedClust(detord);
+  resSelectedClust=ds.selectedClust(detord(overl));
   detsimple=topn{1};
   for(j=1:numel(detsimple))
     detsimple(j).detector=ds.selectedClust(detsimple(j).detector);
   end
-  if(strcmp(disptype{k},'overallcounts'))
-    {'ds.selectedClustDclust','resSelectedClust'};dsup;
+  if(~dsfield(ds,'selectedClustDclust'))
+    {'ds.selectedClustDclust','resSelectedClust'};dsup;%this is the final ordering output
+    [~,mapping]=ismember(ds.selectedClustDclust,ds.selectedClust);
+    ds.detsDclust=selectDetectors(ds.dets,mapping);%this is the final output set of detectors
   end
-  [~,mapping]=ismember(ds.selectedClustDclust,ds.selectedClust);
-  ds.detsDclust=selectDetectors(ds.dets,mapping);
 
   %generate a display of the final detectors
   ds.bestbin.imgs=imgs;
@@ -567,29 +556,35 @@ for(k=1:numel(disptype))
     ds.bestbin.misclabel{1}=misclabel(countsIdxOrd);
   end
   dispres_discpatch;
-  bbhtmlorig=ds.bestbin.bbhtml;
-  ds.bestbin.tosave=[];
-  ds.bestbin.counts=[];
-  ds.bestbin.group=ones(size(ds.bestbin.decision))*2;
-  for(i=1:max(groups))
-    togroup=detord(find(groups==i));
-    togroup=togroup(:)';
-    ds.bestbin.tosave=[ds.bestbin.tosave; ds.selectedClust(togroup)'];
-    ds.bestbin.counts=[ds.bestbin.counts;[counts(togroup,1),counts(togroup,2)]];
-    for(j=togroup(2:end))
-      ds.bestbin.alldisclabelcat(end+1,:)=[0 ds.selectedClust(j)];
-      ds.bestbin.alldiscpatchimg{end+1}=reshape([1 1 1],1,1,[]);
-      ds.bestbin.decision(end+1)=0;
-      ds.bestbin.isgeneral(end+1)=1;
-      ds.bestbin.group(end+1)=1;
+  if(0)
+    %if enabled, this piece of code will generate an additional display
+    %showing which elements overlap with each other.  Note, however,
+    %that it overwrites some metadata for the other display, and so re-generating
+    %that display may not work.
+    bbhtmlorig=ds.bestbin.bbhtml;
+    ds.bestbin.tosave=[];
+    ds.bestbin.counts=[];
+    ds.bestbin.group=ones(size(ds.bestbin.decision))*2;
+    for(i=1:max(groups))
+      togroup=detord(find(groups==i));
+      togroup=togroup(:)';
+      ds.bestbin.tosave=[ds.bestbin.tosave; ds.selectedClust(togroup)'];
+      ds.bestbin.counts=[ds.bestbin.counts;[counts(togroup,1),counts(togroup,2)]];
+      for(j=togroup(2:end))
+        ds.bestbin.alldisclabelcat(end+1,:)=[0 ds.selectedClust(j)];
+        ds.bestbin.alldiscpatchimg{end+1}=reshape([1 1 1],1,1,[]);
+        ds.bestbin.decision(end+1)=0;
+        ds.bestbin.isgeneral(end+1)=1;
+        ds.bestbin.group(end+1)=1;
+      end
     end
+    ds.bestbin.affinities=affinities;
+    dispres_discpatch;
+    ds.bestbin.bbgrouphtml=ds.bestbin.bbhtml;
+    ds.bestbin.bbhtml=bbhtmlorig;
+    dsmv('ds.bestbin',['ds.bestbin_' disptype{k}]);
+    if(dsfield(ds,'dispoutpath')),dssymlink(['ds.bestbin_' disptype{k}],[ds.dispoutpath]);end
   end
-  ds.bestbin.affinities=affinities;
-  dispres_discpatch;
-  ds.bestbin.bbgrouphtml=ds.bestbin.bbhtml;
-  ds.bestbin.bbhtml=bbhtmlorig;
-  dsmv('ds.bestbin',['ds.bestbin_' disptype{k}]);
-  if(dsfield(ds,'dispoutpath')),dssymlink(['ds.bestbin_' disptype{k}],[ds.dispoutpath]);end
   dssave;
   dsclear(['ds.bestbin_' disptype{k}]);
 end

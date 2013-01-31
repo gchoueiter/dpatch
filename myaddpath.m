@@ -10,7 +10,7 @@ function myaddpath(force)
   addpath('html');
   addpath('hog');
   addpath('MinMaxSelection');
-  libHome='/home/gen/';
+  libHome='/home/gen/';%'/nfs/baikal/cdoersch/cv-libs/';
   if(strcmp(libHome,'PATH_TO_LIBSVM'))
     error('set libsvm path in myaddpath.m!!');
   end

@@ -28,7 +28,7 @@ s = M*N;
 
 % Set a threshold
 T = 0.008856;
-% keyboard
+
 RGB = [reshape(color_image(:,:,1),1,s); ...
        reshape(color_image(:,:,2),1,s); ...
        reshape(color_image(:,:,3),1,s)];

@@ -215,9 +215,13 @@ function dsmapreduce(command,mapvars,reducevars,conf)
     for(i=jobsbyround)
       fwascleared=false(max(i),numel(mapvars2));
       for(j=1:numel(mapvars2))
-        sz=eval(['numel(' dsfindvar(mapvars2{j}) ')']);
+        try
+          sz=eval(['numel(' dsfindvar(mapvars2{j}) ')']);
+        catch
+          sz=0;
+        end
         for(thisi=i(:)')
-          if(thisi>sz&&eval(['iscell(' dsfindvar(mapvars2{j}) ')']) && isempty(eval([dsfindvar(mapvars2{j}) '{' num2str(thisi) '}'])))
+          if(thisi>sz||(eval(['iscell(' dsfindvar(mapvars2{j}) ')']) && isempty(eval([dsfindvar(mapvars2{j}) '{' num2str(thisi) '}']))))
             fwascleared(thisi,j)=true;
             dsload([mapvars2{j} '{' num2str(thisi) '}']);
           end
@@ -233,8 +237,8 @@ function dsmapreduce(command,mapvars,reducevars,conf)
         end
       end
       if(~loadresults)
-        for(j=1:numel(reducevars2))
-          dsclear([reducevars2{j} '{' num2str(i(:)') '}']);
+        for(j=1:numel(reducevars))
+          dsclear([reducevars{j} '{' num2str(i(:)') '}']);
         end
       end
       ct=ct+1;
@@ -266,8 +270,8 @@ function dsmapreduce(command,mapvars,reducevars,conf)
   ds.sys.distproc.loadqueue=[];
   ds.sys.distproc.loaddone=[];
   ds.sys.distproc.uniqueredvars={};
-  ds.sys.distproc.nloads=zeros(size(reducevars2));
-  ds.sys.distproc.totalloadtime=zeros(size(reducevars2));
+  ds.sys.distproc.nloads=[];%zeros(size(reducevars2));
+  ds.sys.distproc.totalloadtime=[];%zeros(size(reducevars2));
   ds.sys.distproc.jobprogress=complete;
   ds.sys.distproc.redsize=maxsz;
   ds.sys.distproc.assignmentlog=[];
