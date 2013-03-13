@@ -82,8 +82,6 @@ function addToCluster(obj) {
     cluster_patches.push([i,j]);
     
     reflow();
-
-    return false;
 }
 
 function removeFromCluster(obj) {
@@ -98,8 +96,6 @@ function removeFromCluster(obj) {
     }
     
     reflow();
-
-    return false;
 }
 
 function reflow() {
@@ -118,14 +114,7 @@ function reflow() {
             index++;
         }
     }
-    /*
-    for (var index = 0; index < cluster_patches.length; index++) {
-        i = cluster_patches[index][0], j = cluster_patches[index][1];
 
-        cluster.append('<li id="cluster,' + i + ',' + j + '" class="image-patch">'
-            + '<img src="' + patches[i][j] + '" width="80" height="80" /> </li>');
-    }
-*/
     $('#cluster img').mouseenter(function() {
         $(this).addClass('patch-hover');
     }).mouseleave(function() {
