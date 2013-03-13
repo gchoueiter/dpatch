@@ -2,29 +2,34 @@
 // TODO: update with real patches
 // patches is an m x n array
 // cluster is a 1D list of row,col indices (into patches)
-
 var baseurl = "http://graphics.cs.cmu.edu/projects/whatMakesParis/result/alldiscpatchimg[]/";
-index1 = 41;
-indexn = 56;
-row_width = 4;
-num_rows = (indexn - index1 + 1) / row_width;
+index1 = 1;
+indexn = 23733;
+num_patches = 25;
+row_width = 5;
+num_rows = num_patches / row_width;
 
 patches = []
 cluster_patches = [];
 
-var curr_img = index1;
+var index = 0;
 for (var i = 0; i < num_rows; i++) {
     row = []
     for (var j = 0; j < row_width; j++) {
-        if (curr_img <= indexn) {
-            row.push(baseurl + curr_img + '.jpg');
-            curr_img++;
+        if (index < num_patches) {
+            // random
+            var patch_num = Math.floor(Math.random() * (indexn - index1 + 1)) + index1;
+            row.push(baseurl + patch_num + '.jpg');
+            index++;
         }
     }
     patches.push(row);
 }
 
 $(document).ready(function() {
+    $("#cluster").css('min-height', 90 * num_rows + 95).css('min-width', 90 * row_width + 30);
+    $("#gallery").css('min-height', 90 * num_rows + 95).css('min-width', 90 * row_width + 30);
+
     var gallery = $("#gallery-container");
     for (var i = 0; i < patches.length; i++) {
         gallery.append('<ul id="row' + i + '" class="patch-row"> </ul>');
