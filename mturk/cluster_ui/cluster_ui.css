@@ -1,0 +1,37 @@
+.main-content {
+    width: 80%;
+}
+
+.patch-container {
+    display: table;
+}
+
+#cluster {
+    float: left;
+    min-width: 50%;
+    min-height: 300px;
+}
+
+#gallery {
+    float: right;
+}
+
+.image-patch {
+    display: table-cell;
+    padding: 10px;
+}
+
+.patch-hover {
+    border-style: solid;
+    border-color: green;
+    border-width: 3px;
+    margin: -3px;
+}
+
+.patch-row {
+    display: table-row;
+}
+
+#submit {
+    visibility: hidden;
+}

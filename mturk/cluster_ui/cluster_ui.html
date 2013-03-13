@@ -1,0 +1,43 @@
+<!doctype html>
+ 
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>MTurk DPatch clustering interface</title>
+    
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="cluster_ui.js"></script>
+
+    <link rel="stylesheet" href="cluster_ui.css" />
+ 
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
+    <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+
+</head>
+
+<body>
+
+
+
+<div class="main-content">
+    <p> 
+        Directions: Make the best cluster of similar image patches as you can of at least 5 patches.
+    </p>
+    <p> 
+        <button id="submit">Submit</button>
+        <div id="result"> <p></p></div>
+    </p>
+    <div id="cluster">
+        <h4>Current cluster</h4>
+        <div id="cluster-container" class="patch-container"> </div>
+    </div>
+
+    <div id="gallery">
+        <h4> Patch gallery </h4>
+        <div id="gallery-container" class="patch-container"> </div>
+    </div>
+</div>
+ 
+ 
+</body>
+</html>
