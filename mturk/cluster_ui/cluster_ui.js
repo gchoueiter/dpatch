@@ -59,10 +59,18 @@ $(document).ready(function() {
         addToCluster(this);
     });
 
+    $("#clear").click(function() {
+        $("#result").empty();
+        $("#cluster .image-patch").each(function() {
+            removeFromCluster(this);
+        });
+    });
     $("#submit").click(function () {
-        rs = []
-        for (var i = 0; i < cluster_patches.length; i++) { rs.push('(' + cluster_patches[i] + ')'); }
-        $("#result").text(rs); 
+        $("#result").empty().append("<h4>Result</h4>");
+        for (var index = 0; index < cluster_patches.length; index++) {
+            var i = cluster_patches[index][0], j = cluster_patches[index][1];
+            $("#result").append('<img src="' + patches[i][j] + '" width="50" height="50" style="padding-right: 5px;"/>'); 
+        }
     });
 });
 
@@ -145,42 +153,8 @@ function reflow() {
     });
 
     if (cluster_patches.length >= 5) {
-        $("#submit").css('visibility', 'visible');
+        $("#submit").removeAttr('disabled');
     } else {
-        $("#submit").css('visibility', 'hidden');        
-    }
-}
-
-function reflowCluster(startingIndex) {
-    cluster_patch_coords = [];
-    $.each(cluster_patches, function(coord, index) {
-        if (startingIndex != -1 && index > startingIndex) {
-            cluster_patches[coord]--;
-        }
-        cluster_patch_coords[cluster_patches[coord]] = coord;
-    });
-
-    cluster_rows = cluster_count / row_width;
-    cluster_cols = cluster_count % row_width;
-    for (var i = 0; i < cluster_rows; i++) {
-        cluster_row = $('#clusterrow' + i).empty();
-        for (var j = 0; j < cluster_cols; j++) {
-            gallery_coords = cluster_patch_coords[i*row_width + j].split(',');
-            ci = gallery_coords[0];
-            cj = gallery_coords[1];
-            cluster_row.append('<li id="cluster,'+ci+','+cj+'" class="image-patch"><img src="' + patches[ci][cj] + '" width="80" height="80" /> </li>');
-            
-            $(document.getElementById('cluster,'+ci+','+cj)).click(function() {
-                var id = $(this).attr('id');
-                coords = id.split(',');
-                removeFromCluster(parseInt(coords[1]), parseInt(coords[2]));
-            });
-
-            $('#cluster img').mouseenter(function() {
-                $(this).addClass('patch-hover');
-            }).mouseleave(function() {
-                $(this).removeClass('patch-hover');
-            });
-        }
+        $("#submit").attr('disabled', 'disabled');        
     }
 }

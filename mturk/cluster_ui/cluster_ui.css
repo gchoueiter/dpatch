@@ -1,19 +1,34 @@
 .main-content {
-    width: 80%;
+    width: 100%;
+    font-family: sans-serif;
+    font-size: smaller;
 }
 
 .patch-container {
     display: table;
+    vertical-align: center;
 }
 
 #cluster {
+    padding: 10px;
     float: left;
-    min-width: 50%;
-    min-height: 300px;
+    min-width: 48%;
+    min-height: 500px;
+
+    border-style: solid;
+    border-width: 2px;
+    border-color: green;
 }
 
 #gallery {
-    float: right;
+    margin-left: 3px;
+    padding: 10px;
+    float: left;
+    min-height: 500px;
+
+    border-style: solid;
+    border-width: 2px;
+    border-color: blue;
 }
 
 .image-patch {
@@ -32,6 +47,8 @@
     display: table-row;
 }
 
-#submit {
-    visibility: hidden;
+#button-panel {
+    padding-top: 10px;
+    float: left;
+    clear: left;
 }
