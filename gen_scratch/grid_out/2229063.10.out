@@ -1,0 +1,99 @@
+EXECUTING COMMAND: autoclust_wrapper(  10 )
+Warning: No display specified.  You will not be able to display graphics on the screen.
+Warning: No window system found.  Java option 'MWT' ignored
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2011 The MathWorks, Inc.
+                    R2011b (7.13.0.564) 64-bit (glnxa64)
+                              August 13, 2011
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+calling dpatch clustering for PARoffice ...
+
+ans =
+
+positive
+
+
+ans =
+
+   150
+
+
+ans =
+
+other
+
+
+ans =
+
+        2100
+
+sampling positive patches
+
+matchstr =
+
+*
+
+
+brakidx = 
+
+    []    []
+
+
+matchstr =
+
+.ds.*
+
+
+matchstr =
+
+*
+
+Elapsed time is 0.067788 seconds.
+Elapsed time is 0.081407 seconds.
+Elapsed time is 0.050390 seconds.
+
+respath = 
+
+    'imgsurl'     []
+    'isinit'      []
+    'ispos'       []
+    'myiminds'    []
+    'parimgs'     []
+    'prevnm'      []
+
+File "/data/hays_lab/15_scene_datasetPARoffice/image_0002.jpg" does not exist.
+    file: [1x88 char]
+    name: 'imread'
+    line: 372
+
+    file: '/gpfs/main/home/gen/dpatch/getimg.m'
+    name: 'getimg'
+    line: 13
+
+    file: [1x67 char]
+    name: 'sampleRandomPatches'
+    line: 13
+
+    file: '/gpfs/main/home/gen/dpatch/dswork/dsmapredrun.m'
+    name: 'dsmapredrun'
+    line: 4
+
+    file: '/gpfs/main/home/gen/dpatch/dswork/dsmapreduce.m'
+    name: 'dsmapreduce'
+    line: 226
+
+    file: '/gpfs/main/home/gen/dpatch/autoclust_main_15scene.m'
+    name: 'autoclust_main_15scene'
+    line: 110
+
+    file: '/gpfs/main/home/gen/dpatch/gen_scratch/autoclust_wrapper.m'
+    name: 'autoclust_wrapper'
+    line: 9
+
+MATLAB:imagesci:imread:fileDoesNotExist
+K>> 
