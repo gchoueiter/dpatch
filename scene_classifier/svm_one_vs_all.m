@@ -1,8 +1,9 @@
 % From Jianxoing Xiao SUN_source_code_v2
 function score_test = svm_one_vs_all(K,K_test,class_train,num_classes)
 
-score_test = zeros(size(K_test,2), num_classes);
+score_test = zeros(size(K_test,2), num_classes);%zeros(num_classes,size(K_test,2));%
 for class_ind = 1:num_classes
+    %keyboard
     %train an SVM for each class, test against all test cases.
     Y = 2*(class_train == class_ind)-1; %pos = 1, neg = -1
     
@@ -20,7 +21,13 @@ for class_ind = 1:num_classes
     train_scores = libsvm_cl.sv_coef' * K(libsvm_cl.SVs, :) - libsvm_cl.rho ;
     errs = train_scores .* Y < 0 ;
     err  = mean(errs) ;
-    %fprintf('class %d: training error = %f\t # of SV=%d/%d\n', class_ind, err, length(libsvm_cl.SVs), length(Y));
+    fprintf('class %d: training error = %f\t # of SV=%d/%d\n', class_ind, err, length(libsvm_cl.SVs), length(Y));
     % test it on test
+    try
     score_test(:,class_ind) = libsvm_cl.sv_coef' * K_test(libsvm_cl.SVs,:) - libsvm_cl.rho ;
+    catch e
+        disp(e.message)
+        keyboard
+    end
+    %todo: save model??
 end

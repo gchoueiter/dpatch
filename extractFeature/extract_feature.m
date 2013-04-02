@@ -1,7 +1,7 @@
 % gen
 %calculates dpatch feature
 
-function extract_feature(img_name, img_path, save_path, npatch_fname, njobs, isparallel, log_path)
+function extract_feature(img_name, img_path, save_path, detectors_fname, njobs, isparallel, log_path)
 
 % there are conflicting versions of some files, so this explicitly
 % includes the correct versions
@@ -24,25 +24,13 @@ GVARS.save_path = save_path;
 GVARS.rand = sprintf('%8d',floor(rand(1)*1e8));
 GVARS.njobs = njobs;
 %% TODO: load info about dpatch models
-%GVARS.npatch_fname =
+%GVARS.detectors_fname =
 %'/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat';
-GVARS.npatch_fname = npatch_fname;
+GVARS.detectors_fname = detectors_fname;
 
 % load the dpatch library
-detectors = load(GVARS.npatch_fname);
-detectors = detectors.data;
-GVARS.npatch = detectors.firstLevModels;
-params = struct( ...
-  'imageCanonicalSize', 400,...% images are resized so that their smallest dimension is this size.
-  'patchCanonicalSize', {[80 80]}, ...% patches are extracted at this size.  Should be a multiple of sBins.
-  'scaleIntervals', 8, ...% number of levels per octave in the HOG pyramid 
-  'sBins', 8, ...% HOG sBins parameter--i.e. the width in height (in pixels) of each cell
-  'useColor', 1, ...% include a tiny image (the a,b components of the Lab representation) in the patch descriptor
-  'patchOverlapThreshold', 0.6, ...%detections (and random samples during initialization) with an overlap higher than this are discarded.
-  'svmflags', '-s 0 -t 0 -c 0.1');
-GVARS.params_fname = [GVARS.save_path 'params.mat'];
-save(GVARS.params_fname, 'params');
-
+load(GVARS.detectors_fname);
+GVARS.detectors = detectors;
 GVARS.detectionParams = struct( ...
   'selectTopN', false, ...
   'useDecisionThresh', true, ...
@@ -77,7 +65,7 @@ GVARS.log_path = log_path;
 %params for using spatial pyramid and maxpool or bow
 %if GVARS.maxpool is false, then bag of words will be used
 GVARS.maxpool = 0;
-
+disp('starting jobs for dpatch extraction...');
 run_jobs();
 
 %check that output dir is full
@@ -113,44 +101,46 @@ end
 feat = pack_feats(final_feats);
 
 %keyboard
-save(save_name, 'feat');
+ save(save_name, 'feat');
+ save(fullfile(save_path,[img_name(1:end-4) '.mat']), 'feat');
+ % we're saving the temp files now...%
+ %delete temp files
+ % delete_tmp_files();
 
-%delete temp files
-delete_tmp_files();
+ disp('dpatch feature calculated!');
+ end
 
-disp('dpatch feature calculated!');
-end
+ function [free_job_stat] = check_jobs_avail()
+ global GVARS
 
-function [free_job_stat] = check_jobs_avail()
-global GVARS
+ %check qstat for number of jobs running with name ['dp' GVARS.rand]
+ %if less than GVARS.njobs, return 1
+ [status,running_jobs_str] = unix(['qstat |grep ' ['dp' GVARS.rand] ' |wc -l']);
+ running_jobs = str2double(running_jobs_str);
+ %[status,running_jobs_str] = unix(['qstat -s p |grep ' ['dp' GVARS.rand] ' |wc -l']);
+ %running_jobs = running_jobs + str2double(running_jobs_str);
 
-%check qstat for number of jobs running with name ['dp' GVARS.rand]
-%if less than GVARS.njobs, return 1
-[status,running_jobs_str] = unix(['qstat |grep ' ['dp' GVARS.rand] ' |wc -l']);
-running_jobs = str2double(running_jobs_str);
-%[status,running_jobs_str] = unix(['qstat -s p |grep ' ['dp' GVARS.rand] ' |wc -l']);
-%running_jobs = running_jobs + str2double(running_jobs_str);
+ free_job_stat = running_jobs < GVARS.njobs;
 
-free_job_stat = running_jobs < GVARS.njobs;
+ end
 
-end
+ function run_jobs()
 
-function run_jobs()
+ global GVARS
 
-global GVARS
-
-%for all the dpatches, while there are jobs
-
-for p = 1:length(GVARS.npatch.info)
-   job_avail = check_jobs_avail();
-   while(job_avail == 0)
-       pause(0.5); % TODO: is this a good amount of time?
+ %for all the dpatches, while there are jobs
+ %keyboard
+for p = 1:length(GVARS.detectors.firstLevModels.info)
+   if(GVARS.isparallel)
        job_avail = check_jobs_avail();
-   end
-   
-   % do the conv. func
-   % save to result 
-   launch_dpatch_eval( p); 
+       while(job_avail == 0)
+           pause(0.5); % TODO: is this a good amount of time?
+           job_avail = check_jobs_avail();
+       end
+    end   
+       % do the conv. func
+       % save to result 
+       launch_dpatch_eval( p); 
 end
 
 end
@@ -163,7 +153,7 @@ num_patches_complete = sum(~(cell2mat(arrayfun(@(x) isempty(strfind(x.name, 'dpa
                         dir(GVARS.save_path), 'UniformOutput', ...
                                             false))));
 
-if(num_patches_complete == length(GVARS.npatch.info))
+if(num_patches_complete == length(GVARS.detectors.firstLevModels.info))
     status = 1;
 else
     status = 0;
@@ -205,7 +195,7 @@ for ft = 1:length(tmp_feats)
     %not be a fast operation, so maybe I'll change it later.
     %%TODO: change this bc the output of conv_func isn't quite like
     %%this
-keyboard
+    %keyboard
     cur_feat = reshape(tmp_feats{ft}.feat, tmp_feats{ft}.imsize);
     for r = 1:rows-mp_dim+1
         for c = 1:cols-mp_dim+1
@@ -247,7 +237,7 @@ function delete_tmp_files()
 global GVARS
 
 rm_cmd = ['rm -f ' GVARS.save_path '*dpatch_tmp_feat*'];
-unix(rm_cmd);
+unix(rm_cmd); 
 %sometimes everything doesn't get deleted
 [~,r] = unix(['ls ' GVARS.save_path '* | wc -l']);
 r = str2double(r);
@@ -256,7 +246,7 @@ while(r > 1)
     [~,r] = unix(['ls ' GVARS.save_path '* | wc -l']);
     r = str2double(r);
 end
-rm_cmd = ['rm -f ' GVARS.params_fname];
+%rm_cmd = ['rm -f ' GVARS.params_fname];
 unix(rm_cmd);
-
+%TODO: move final result file up on level and delete the dir
 end

@@ -4,7 +4,7 @@
 %run in parallel?
 isparallel=1;
 %if isparallel=1, number of parallel jobs
-nprocs=1000;
+nprocs=200;
 %if isparallel=1, whether to run on multiple machines or locally
 isdistributed=1;
 
@@ -12,8 +12,18 @@ isdistributed=1;
 global ds;
 myaddpath;
 ds.prevnm=mfilename;
-dssetout(['/data/hays_lab/finder/Discriminative_Patch_Discovery/try_parallel/' cat_str '/'  ds.prevnm '_out']);
-%['/data/hays_lab/finder/Discriminative_Patch_Discovery/discovered_categories/' cat_str '/'  ds.prevnm '_out']);
+%ds.prevnm='autoclust_main_15scene'
+ds.isrecalc = 0;
+ranking=1;
+
+   patch_dir{1}=['/data/hays_lab/finder/Discriminative_Patch_Discovery/' ...
+               '15_scene_patches/overallcounts'];
+
+   patch_dir{2}=['/data/hays_lab/finder/Discriminative_Patch_Discovery/' ...
+               '15_scene_patches/posterior'];
+
+dssetout([patch_dir{ranking} '/' cat_str '/'  ds.prevnm '_out']);
+
 %ds.dispoutpath=[ ds.prevnm '_out/'];
 %loadimset(7);
 %% NOTE: this should be changed to the correct dataset also
@@ -88,7 +98,7 @@ ds.parimgs=parimgs;
 numel(parimgs)
 'other'
 numel(otherimgs)
-
+%%
 %sample random positive "candidate" patches
 step=2;
 ds.isinit=makemarks(ds.myiminds(1:step:end),numel(imgs));
@@ -96,6 +106,7 @@ initInds=find(ds.ispos&ds.isinit);
 if(isparallel&&(~dsmapredisopen()))
     dsmapredopen(nprocs, 1, ~isdistributed);
 end
+%%
 if(~dsfield(ds,'initFeats'))
   disp('sampling positive patches');
   ds.sample=struct();
@@ -136,7 +147,6 @@ npatches=size(ds.centers,1);
 ds.centers=[];
 dsmapreduce('autoclust_assignnn2',{'ds.myiminds'},{'ds.assignednn','ds.assignedidx','ds.pyrscales','ds.pyrcanosz'});
 ds.centers=[];
-%%%%%%% up to here the parallel jobs work
 
 %Sort the candidate patches by the percentage of top 20 nearest neighbors that come from positive set.
 %Create a display of the highest-ranked 1200.
@@ -266,7 +276,7 @@ clear topndist;
 clear topnorig;
 dssave;
 
-
+%%
 %begin cluster refinement procedure.
 ds.conf.processingBatchSize=600;
 pbs=ds.conf.processingBatchSize;
@@ -276,6 +286,7 @@ if(dsfield(ds,'batch','curriter'))
   starti=1+(pbs*(ds.batch.curriter-1))
   batchidx=ds.batch.curriter-1;
 end
+%%
 maintic=tic;
 if(isparallel&&(~dsmapredisopen()))
   dsmapredopen(nprocs,1,~isdistributed);
@@ -479,10 +490,10 @@ dsdelete('ds.bestbin');
 %tends to prefer elements that look very different from the negative set, whereas
 %the 'overallcounts' tends to prefer elements that are more common.
 
-disptype={'overallcounts','posterior'};
+disptype={'overallcounts', 'posterior'};
 dsload('ds.myiminds','recheck');
 [topn,posCounts,negCounts]=readdetsimple(maxdet,-.2,struct('oneperim',1,'issingle',1,'nperdet',250));
-for(k=1:numel(disptype))
+for k=1:numel(disptype)
   alldetections=[topn{1}(:);topn{2}(:)]';
   detsimpletmp=[];
   tmpdetectors=[alldetections.detector];
@@ -556,7 +567,8 @@ for(k=1:numel(disptype))
     ds.bestbin.misclabel{1}=misclabel(countsIdxOrd);
   end
   dispres_discpatch;
-  if(0)
+  if(1)
+%       k = 1; 
     %if enabled, this piece of code will generate an additional display
     %showing which elements overlap with each other.  Note, however,
     %that it overwrites some metadata for the other display, and so re-generating
@@ -587,4 +599,16 @@ for(k=1:numel(disptype))
   end
   dssave;
   dsclear(['ds.bestbin_' disptype{k}]);
+  
+  % pause
+  % copy everything from the k = 1 directory into the k = 2 directory and change the output path   
+  if(k==1)
+      stat = 1;
+      while(stat > 0.1)
+        pause(5)
+        stat = system(['cp -rf ' patch_dir{k} '/' cat_str '/ ' patch_dir{k+1} '/' cat_str '/ ']);
+      end        
+      dssetout([patch_dir{k+1} '/' cat_str '/'  ds.prevnm '_out']);
+  end
+  
 end

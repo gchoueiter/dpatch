@@ -15,5 +15,5 @@ for i = 1:length(im_names)
     imgs(i).city = im_names{i}(33:end-15);
     imgs(i).imsize = size(cur_im);
 end
-
+keyboard
 save('dataset15.mat', 'imgs');

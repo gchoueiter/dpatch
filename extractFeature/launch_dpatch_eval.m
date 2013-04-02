@@ -5,7 +5,7 @@
 function launch_dpatch_eval(patch_num)
 
 global GVARS
-
+%keyboard
 % TODO: check if results exist
 save_name = fullfile(GVARS.save_path, sprintf('%s_dpatch_feat_%d.mat', GVARS.img_name(1:end-4), patch_num));
 if(exist(save_name,'file'))
@@ -18,7 +18,7 @@ if(~GVARS.isparallel)
     
     % launch conv job locally          
     conv_wrapper(GVARS.img_name, GVARS.img_path, GVARS.save_path, ...
-		 GVARS.npatch_fname, patch_num, GVARS.params_fname);
+		 GVARS.detectors_fname, patch_num);
 
 
 else
@@ -31,10 +31,10 @@ else
     logfileerr = fullfile(GVARS.log_path, GVARS.img_name(1:end-4), ['qsub_out_' num2str(patch_num) '.err']);
     logfileout = fullfile(GVARS.log_path, GVARS.img_name(1:end-4), ['qsub_out_' num2str(patch_num) '.out']);
 
-    tmpFuncCall = sprintf('conv_grid_wrapper.sh %s %s %s %s %d %s', ...
+    tmpFuncCall = sprintf('/home/gen/dpatch/extractFeature/conv_grid_wrapper.sh %s %s %s %s %d %s', ...
 			  GVARS.img_name, GVARS.img_path, ...
-			  GVARS.save_path, GVARS.npatch_fname, ...
-			  patch_num, GVARS.params_fname);
+			  GVARS.save_path, GVARS.detectors_fname, ...
+			  patch_num);
     %keyboard
 qsub_cmd = ['qsub -N dp' GVARS.rand ' -l short' ' -e ' logfileerr ' -o ' logfileout ' ' tmpFuncCall];
     

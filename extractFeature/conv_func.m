@@ -1,51 +1,52 @@
 % this is a slightly different version of TY_conv_func
 %  This runs the conv_func on the input image with the dpatch
 %  specified by patch_ind
-function [feat, imsize] = conv_func(img, imgsHome, npatch, patch_ind, params);
+function [feat, imsize] = conv_func(img, imgsHome, detectors, patch_ind);
 %   img:    the input image
-%   npatch: n dpatch models
 %   patch_ind: index of patch to use from npatch
-%   params: the params from DPatch discovery code
+%   detectors: this contains all the classifiers ad the params from DPatch discovery code
 
 global ds; 
 
 
 % This is the test case
-if nargin == 0
-    %% load test model
-    img = im2double(imread('/data/hays_lab/15_scene_dataset/store/image_0010.jpg'));
-    %figure(2)
-    %imshow(img)
-    disp('proof of img');
-    img(1:2,1:2,:)
+% if nargin == 0
+%     %% load test model
+%     img = im2double(imread('/data/hays_lab/15_scene_dataset/store/image_0010.jpg'));
+%     %figure(2)
+%     %imshow(img)
+%     disp('proof of img');
+%     img(1:2,1:2,:)
 
-    %parameters for Saurabh's code
-    params= struct( ...
-      'imageCanonicalSize', 400,...% images are resized so that their smallest dimension is this size.
-      'patchCanonicalSize', {[80 80]}, ...% patches are extracted at this size.  Should be a multiple of sBins.
-      'scaleIntervals', 4, ...% number of levels per octave in the HOG pyramid 
-      'sBins', 4, ...% HOG sBins parameter--i.e. the width in height (in pixels) of each cell
-      'useColor', 1, ...% include a tiny image (the a,b components of the Lab representation) in the patch descriptor
-      'patchOverlapThreshold', 0.6, ...%detections (and random samples during initialization) with an overlap higher than this are discarded.
-      'svmflags', '-s 0 -t 0 -c 0.1', ...
-      'numLevel', 3);
-    ds.conf.params = params;
+%     %parameters for Saurabh's code
+%     params= struct( ...
+%       'imageCanonicalSize', 400,...% images are resized so that their smallest dimension is this size.
+%       'patchCanonicalSize', {[80 80]}, ...% patches are extracted at this size.  Should be a multiple of sBins.
+%       'scaleIntervals', 4, ...% number of levels per octave in the HOG pyramid 
+%       'sBins', 4, ...% HOG sBins parameter--i.e. the width in height (in pixels) of each cell
+%       'useColor', 1, ...% include a tiny image (the a,b components of the Lab representation) in the patch descriptor
+%       'patchOverlapThreshold', 0.6, ...%detections (and random samples during initialization) with an overlap higher than this are discarded.
+%       'svmflags', '-s 0 -t 0 -c 0.1', ...
+%       'numLevel', 3);
+%     ds.conf.params = params;
 
-    ds.conf.detectionParams = struct( ...
-  'selectTopN', false, ...
-  'useDecisionThresh', true, ...
-  'overlap', 0.4, ...% detections with overlap higher than this are discarded.
-  'fixedDecisionThresh', -1.002);    
+%     ds.conf.detectionParams = struct( ...
+%   'selectTopN', false, ...
+%   'useDecisionThresh', true, ...
+%   'overlap', 0.4, ...% detections with overlap higher than this are discarded.
+%   'fixedDecisionThresh', -1.002);    
     
-    numLevel = params.numLevel;
+%     numLevel = params.numLevel;
     
-    detectors = load('/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat');
-%load('detectors.mat'); % detector can be found at ds.batch.round{k}.detectors.mat
-    detectors = detectors.data;
-    npatch = detectors.firstLevModels;
-    patch_ind = 1;
-end
+%     detectors = load('/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/CALsuburb]/autoclust_main_15scene_out/ds/batch/round6/detectors.mat');
+% %load('detectors.mat'); % detector can be found at ds.batch.round{k}.detectors.mat
+%     detectors = detectors.data;
 
+%     patch_ind = 1;
+% end
+
+npatch = detectors.firstLevModels;
+params = detectors.params;
 feats = constructFeaturePyramid(img, params);  % reuse the code from dpatch 
 
 for numDet = patch_ind

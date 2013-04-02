@@ -91,7 +91,15 @@ function dsmapredopen(njobs,nprocs,submitlocal)
        logstring = [' -e ' logfileerr ' -o ' logfileout ' ']; 
        %qsub_cmd=['/opt/torque/bin/qsub -N dsmapreducer' num2str(i) ' -l nodes=1:ppn=' num2str(nprocs) ' ' logstring ' ' tmpOutFName]
        %ssh_cmd = sprintf(['ssh warp.hpc1.cs.cmu.edu ''%s'''], qsub_cmd);
-       qsub_cmd=['qsub -N dsmapreducer' num2str(i) ' -l long' logstring tmpOutFName]
+       try
+           if ds.isrecalc == 1
+                qsub_cmd=['qsub -N dsmapreducer' num2str(i) ' -l short' logstring tmpOutFName]
+           else
+                qsub_cmd=['qsub -N dsmapreducer' num2str(i) ' -l vlong' logstring tmpOutFName]
+           end
+       catch
+           qsub_cmd=['qsub -N dsmapreducer' num2str(i) ' -l vlong' logstring tmpOutFName]
+       end
        ssh_cmd = sprintf(['''%s'''], qsub_cmd);
 %keyboard
        unix(qsub_cmd);

@@ -4,7 +4,7 @@
 # ------ attach job number
 #$ -j n
 # ------ attach task number
-#$ -t 1-15
+#$ -t $1
 # ------ send to particular queue {short,long,vlong}
 #$ -l vlong
 # ------ can use up to 4GB of memory

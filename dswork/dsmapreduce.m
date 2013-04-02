@@ -440,7 +440,7 @@ function readslave(idx,isrunning,redvars,loadresults)
           ds.sys.distproc.idleprocs=[ds.sys.distproc.idleprocs idx];
           if(isrunning&&numel(ds.sys.distproc.idleprocs)>numel(ds.sys.distproc.availslaves))
             disp('too many idle procs');
-            keyboard;
+            %keyboard;
           end
         end
         dsstacktrace(cmd.err,1);
