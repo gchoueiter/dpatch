@@ -14,7 +14,9 @@ addpath(genpath('../extractFeature'));
 %GVARS is a struct that holds variables used in the functions below
 global GVARS
 
-if nargin < 6
+if nargin < 5
+    njobs = 0;
+    isparallel = 0;
     log_path ='.';
 end
 

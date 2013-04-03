@@ -2,7 +2,7 @@
 try
 global sc;
 ranking_type = {'overallcounts', 'posterior'};
-for rank = 1:2
+for rank = 2%1:2
 data_path = ...%'/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/';
             ['/data/hays_lab/finder/Discriminative_Patch_Discovery/' ...
              '15_scene_patches/' ranking_type{rank} '/'];
@@ -191,17 +191,17 @@ end
 end
 %end num_patches
 end
-
+%keyboard
 save_name = [sc.svm_path 'SVM_Result_' sc.feat(num_feat).name '_' sc.feat(num_feat).kernel_name '_' sprintf('%.4d',length(train_inds)) sprintf('_all_perf_%s.mat',ranking_type{rank})];
-all_perf = all_perf(:, num_training_patches);
-all_ap = all_ap(:, num_training_patches);
+all_perf = all_perf(:, num_training_patches,rank);
+all_ap = all_ap(:, num_training_patches,rank);
 save(save_name, 'all_perf', 'all_ap');
 
 figure
-plot(num_training_patches,all_perf')
+plot(num_training_patches_used,all_perf','-s')
 ylabel('Performance (%)')
 xlabel('Number of Patches')
-legend(sc.feat(:).kernel_name)
+legend(sc.feat(:).kernel_name, 4)
 keyboard
 %end rank
 end

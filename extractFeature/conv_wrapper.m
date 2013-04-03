@@ -29,14 +29,20 @@ addpath(genpath('../extractFeature'));
     end
     disp(sprintf('calculating response to patch number %d...',patch_num));
 try
+   last_stroke = strfind(img_name, '/');
+   last_stroke = last_stroke(end);
+   save_name = fullfile(save_path, sprintf('%s_dpatch_tmp_feat_%d.mat', ...
+                                           img_name(last_stroke:end-4), patch_num));
+   if exist(save_name, 'file')
+       disp( ['temp patch ' num2str(patch_num) ' already calculated']);
+       return;
+   end
    img = im2double(imread(fullfile(img_path,img_name)));
 
    load(detectors_fname);
    [feat, imsize] = conv_func(img, img_path, detectors, patch_num);%conv_func();%
-   last_stroke = strfind(img_name, '/');
-   last_stroke = last_stroke(end);
-   save_name = fullfile(save_path, sprintf('%s_dpatch_tmp_feat_%d.mat', img_name(last_stroke:end-4), patch_num));
-    save(save_name, 'feat', 'imsize');
+      
+   save(save_name, 'feat', 'imsize');
 
 catch e
     disp(e.message);
