@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!-- saved from url=(0055)http://vision.ucsd.edu/~tylin/label_project/label2.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="./label2_files/imgareaselect-default.css">
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+    </style>
+    <script type="text/javascript" src="./label2_files/js">
+    </script><script src="./label2_files/main.js" type="text/javascript"></script>
+    <script type="text/javascript" src="./label2_files/jquery.min.js"></script>
+    <script type="text/javascript" src="./label2_files/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="./label2_files/jquery.imgareaselect.dev.js"></script>
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      div.control_panel
+      {
+      padding: 5px;
+      margin: 10px;
+      border: 1px dashed #968895;
+      }
+    </style>
+
+    <script type="text/javascript">
+	patSize = 80;
+	function initialize(){
+		// target div, target img, index of target image
+		overlay_imselect($('#img_div'), $('#img'), 0 );
+		overlay_imselect($('#img_div2'), $('#img2'), 1 );
+	}
+	function overlay_imselect(div_obj, img_obj, ind){
+		// create imgselect border div
+                for (i=0; i<8; i++){
+                        div_obj.append('<div id="border' +ind + '_' +i +'" style="visibility:hidden"></div>');
+			div_obj.data('ind', ind);
+			div_obj.data('state', 0);  // select or not
+                }
+		div_obj.bind('mousemove', function(e){
+			offx =div_obj.position().left;
+			offy = div_obj.position().top;
+			x = e.clientX + $('#body').scrollLeft() - offx;
+			y = e.clientY + $('#body').scrollTop() - offy;
+			$('#output').html('x: '+x+'y: '+y);
+			ind = $(this).data('ind');
+			// set border1
+			imSize = getImgSize(img_obj);
+			if ($(this).data('state') == 0){
+			if (x >patSize/2 && x < imSize.width-patSize/2 && y >patSize/2 && y < imSize.height-patSize/2){
+			//if (x >0 && x < imSize.width && y >0 && y < imSize.height){
+				bbox = new Array();
+				bbox[0] = x-patSize/2;   //left
+				bbox[1] = y-patSize/2;  //upper
+				bbox[2] = x+patSize/2;   //right 
+				bbox[3] = y+patSize/2;  //lower
+				setBorderStyle($('#border'+ind+'_0'), imSize.left,  imSize.top, bbox[0], bbox[1]);
+				setBorderStyle($('#border'+ind+'_1'), bbox[2]+offx, imSize.top, imSize.width-bbox[2], bbox[1]);
+				setBorderStyle($('#border'+ind+'_6'), imSize.left,  bbox[3]+offy, bbox[0], imSize.height-(bbox[3]));
+				setBorderStyle($('#border'+ind+'_7'), bbox[2]+offx, bbox[3]+offy, imSize.width-bbox[2], imSize.height-(bbox[3]));
+
+				setBorderStyle($('#border'+ind+'_2'), imSize.left, bbox[1]+offy, bbox[0], patSize );
+				setBorderStyle($('#border'+ind+'_3'), bbox[2]+offx, bbox[1]+offy, imSize.width-bbox[2], patSize);
+				$('#border'+ind+'_2').css('border-right', '2px solid #a1a1a1');
+				$('#border'+ind+'_3').css('border-left', '2px solid #a1a1a1');
+
+				setBorderStyle($('#border'+ind+'_4'), bbox[0]+offx, imSize.top, patSize, bbox[1] );
+				setBorderStyle($('#border'+ind+'_5'), bbox[0]+offx, bbox[3]+offy, patSize, imSize.height-(bbox[3]));
+				$('#border'+ind+'_4').css('border-bottom', '2px solid #a1a1a1');
+				$('#border'+ind+'_5').css('border-top', '2px solid #a1a1a1');
+			}else{
+				for (i=0; i<8; i++){
+		                        $('#border'+ind+'_'+i).css('visibility', 'hidden');               		
+				}
+			}
+			}
+		});
+                div_obj.bind('mouseout', function(e){
+			if ($(this).data('state') == 0){
+                        ind = $(this).data('ind');
+                        for (i=0; i<8; i++){
+                                $('#border'+ind+'_'+i).css('visibility', 'hidden');
+                        }
+			}
+                });
+		div_obj.bind('click', function(e){
+			// store click info here!!!!
+			offx =div_obj.position().left;
+                        offy = div_obj.position().top;
+                        x = e.clientX + $('#body').scrollLeft() - offx;
+                        y = e.clientY + $('#body').scrollTop() - offy;
+			if ($(this).data('state')==0){
+			if (x >patSize/2 && x < imSize.width-patSize/2 && y >patSize/2 && y < imSize.height-patSize/2){
+				pos = new Array();
+				pos[0]=x;pos[1]=y;
+				// store x and y under div_obj
+				$(this).data('x', x);
+				$(this).data('y', y);
+				$(this).data('state', 1);
+				alert(pos)
+			}
+			}
+		});
+	}
+	function getImgSize(obj){
+		return {left:obj.position().left, top:obj.position().top, width:obj.width(), height:obj.height()};
+	}
+	function setBorderStyle(obj, left, top, width, height){
+        	obj.width(width);
+                obj.height(height);
+                obj.css('position', 'absolute');
+                obj.css('left', left);
+                obj.css('top', top);
+                obj.css('width', width);
+                obj.css('height', height);
+                obj.css('opacity', 0.7);
+//		obj.css('border', '2px solid #a1a1a1');
+                obj.css('background-color', 'black');
+                obj.css('z-index', 1);
+                obj.css('visibility', 'visible');
+	}
+    </script>
+  <script type="text/javascript" charset="UTF-8" src="./label2_files/{common,util,stats}.js"></script></head>
+  <body id="body" onload="initialize()">
+    <div id="output"></div>
+    <div id="img_div">
+	<img id="img" src="./label2_files/ICON_GEO.png">
+    <div id="border0_0" style="visibility:hidden"></div><div id="border0_1" style="visibility:hidden"></div><div id="border0_2" style="visibility:hidden"></div><div id="border0_3" style="visibility:hidden"></div><div id="border0_4" style="visibility:hidden"></div><div id="border0_5" style="visibility:hidden"></div><div id="border0_6" style="visibility:hidden"></div><div id="border0_7" style="visibility:hidden"></div></div>
+
+    <div id="img_div2">
+	<img id="img2" src="./label2_files/ICON_HDR.png">
+    <div id="border1_0" style="visibility:hidden"></div><div id="border1_1" style="visibility:hidden"></div><div id="border1_2" style="visibility:hidden"></div><div id="border1_3" style="visibility:hidden"></div><div id="border1_4" style="visibility:hidden"></div><div id="border1_5" style="visibility:hidden"></div><div id="border1_6" style="visibility:hidden"></div><div id="border1_7" style="visibility:hidden"></div></div>
+
+  
+
+</body></html>
