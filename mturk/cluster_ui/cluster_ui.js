@@ -2,7 +2,10 @@
 // TODO: update with real patches
 // patches is an m x n array
 // cluster is a 1D list of row,col indices (into patches)
-var baseurl = "http://graphics.cs.cmu.edu/projects/whatMakesParis/result/alldiscpatchimg[]/";
+
+// Just need to change this so that the get request sets the correct path
+//"http://graphics.cs.cmu.edu/projects/whatMakesParis/result/alldiscpatchimg[]/";
+var baseurl = "http://cs.brown.edu/~gen/nn_patches/MITinsidecity/cluster_imgs/cluster1/"; 
 index1 = 1;
 indexn = 23733;
 num_patches = 25;
@@ -12,13 +15,13 @@ num_rows = num_patches / row_width;
 patches = []
 cluster_patches = [];
 
-var index = 0;
+var index = 1;
 for (var i = 0; i < num_rows; i++) {
     row = []
     for (var j = 0; j < row_width; j++) {
-        if (index < num_patches) {
+        if (index <= num_patches) {
             // random
-            var patch_num = Math.floor(Math.random() * (indexn - index1 + 1)) + index1;
+            var patch_num = index;//Math.floor(Math.random() * (indexn - index1 + 1)) + index1;
             row.push(baseurl + patch_num + '.jpg');
             index++;
         }
