@@ -1,0 +1,13 @@
+#
+# Basic qualification attributes
+#
+#Created qualification type: 2L9ULF395SW61OUV2HEYSJBYF2PRDB
+#You can take the test here: http://www.mturk.com/mturk/requestqualification?qualificationId=2L9ULF395SW61OUV2HEYSJBYF2PRDB
+
+name=Attribute Labeling Qualification Quiz v1.8
+description=This qualification tests your understanding of the attribute labeling instructions
+keywords=image labeling
+retrydelayinseconds=60
+
+# Workers will have 30 minutes to complete this test. 30 minutes = 60 seconds * 30 minutes = 1800
+testdurationinseconds=1800

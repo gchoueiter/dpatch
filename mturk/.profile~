@@ -1,0 +1,3 @@
+export JAVA_HOME=/usr
+export MTURK_CMD_HOME=/home/gen/dpatch/mturk/AMTscripts
+exprt HIT_HOME=/home/gen/dpatch/mturk/cluster_task

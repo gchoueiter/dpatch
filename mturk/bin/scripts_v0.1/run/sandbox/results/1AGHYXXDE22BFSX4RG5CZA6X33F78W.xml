@@ -1,0 +1,15 @@
+<results>
+<annotation>
+<absent name="No people" explicit="0" ct="-1"/>
+<absent name="> 10 people" explicit="0" ct="-1"/>
+<bbox name="head" sqn="1" left="90.816" top="125.18400000000001" width="193.984" height="246.20799999999997">
+	<pt x="70.95" y="160.3" ct="1285781781180"/>
+	<pt x="221.5" y="351.65" ct="1285781782936"/>
+</bbox>
+<bbox name="head" sqn="2" left="419.072" top="8.32" width="217.66400000000002" height="273.536">
+	<pt x="327.4" y="69" ct="1285781798560"/>
+	<pt x="496.45" y="281.7" ct="1285781800144"/>
+</bbox>
+</annotation>
+
+<meta load_time="1285781775510" submit_time="1285781805492"/></results>

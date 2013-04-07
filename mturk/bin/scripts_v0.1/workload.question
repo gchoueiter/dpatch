@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
+
+	<ExternalURL>http://visual-hits.s3.amazonaws.com/demo-heads/code/generic2.html?swf=label_generic&amp;swf_w=700&amp;swf_h=700&amp;img_base=http://visual-hits.s3.amazonaws.com/demo-heads/&amp;video=${Video}&amp;frame=${Frame}&amp;task=${Task}</ExternalURL> 
+
+
+  <FrameHeight>800</FrameHeight>
+</ExternalQuestion>

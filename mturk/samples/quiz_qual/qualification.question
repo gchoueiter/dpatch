@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+    <Overview>
+       <Title>Attribute Labeling Quiz</Title>
+	<FormattedContent><![CDATA[
+	This quiz will prepare turkers for the <strong>Scene Attribute Labeling</strong> tasks.
+	Answer the questions below by clicking on the scene images that contain the attributes in the question.
+      <h2>Helpful Information</h2>
+	An <font color="darkblue" size="2" ><b>Attribute</b> </font> is something that is characteristically part of a scene.
+	An attribute can be a material, an object, an activity that people typically do in that place, or the general shape of the scene.
+      <br/>
+      <h3>For example:</h3>
+        <ul>
+          <li>A forrest often contains <font size="2" color="darkblue" ><b>leaves</b></font>.</li>
+          <li>A hospital room is often <font size="2" color="darkblue" ><b>sterile</b></font>.</li>
+          <li>On a baseball field, people often <font size="2" color="darkblue" ><b>play</b></font>.</li>
+          <li>An auditorium is an <font size="2" color="darkblue" ><b>enclosed area</b></font>.</li>
+          <li>A mountain scene is usually <font size="2" color="darkblue" ><b>rugged</b></font>.</li>
+	  <li>At an amusement park, people often <font size="2" color="darkblue" ><b>wait in line</b></font>. </li>
+        </ul>
+	If you are not sure if an attribute is present in an image, <font size="2" color="red" ><b>do not click</b> </font>on that image.
+	However, for <strong>activities</strong> we ask whether an
+	activity might reasonably take place in a scene. For example, if there
+	is an empty <font size="2" color="green" ><b>playground</b></font> in the image and the question asks for scenes
+	where <font size="2" color="green" ><b>playing</b></font> happens, selecting that image would be fine.   
+	<h3><a href="http://www.cs.brown.edu/~gen/Attributes/web_user_interfaces/attributeLabeler_instructions.html">For futher instructions on how to do "Scene Attribute Labeling" Click Here!</a></h3>   
+	<h2>Questions:</h2>
+	<h3>For some of the questions <strong>more than one</strong> image will contain the question attribute, and for others <strong>none</strong> of the images will contain the attribute. </h3>
+    ]]></FormattedContent>
+    </Overview>
+<Question>
+     <QuestionIdentifier>question1</QuestionIdentifier>
+     <IsRequired>true</IsRequired>
+     <QuestionContent>
+      <FormattedContent><![CDATA[<font size="4"> Which of these 3 scenes contain the following lighting or material? </font>
+	<br/>
+	<br/>
+      <font size="4" color="blue" >brick</font>
+      ]]></FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>checkbox</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>1a</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/a/airlock/sun_aenfetxfeupuohpe.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/a/airlock/sun_aenfetxfeupuohpe.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>1b</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/t/train_depot/sun_btjfdoqmlcosfsbl.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/t/train_depot/sun_btjfdoqmlcosfsbl.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>1c</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/a/alley/sun_adwjwivxbszikxlb.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/a/alley/sun_adwjwivxbszikxlb.jpg</AltText>
+            </Binary>
+          </Selection>
+	  <Selection>
+                  <SelectionIdentifier>1d</SelectionIdentifier>
+                  <Text>None of the above</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+   <Question>
+     <QuestionIdentifier>question2</QuestionIdentifier>
+     <IsRequired>true</IsRequired>
+     <QuestionContent>
+      <FormattedContent><![CDATA[<font size="4"> Which of these 3 scenes contain the following lighting or material? </font>
+	<br/>
+	<br/>
+      
+      <font size="4" color="blue" >natural lighting</font>
+      ]]></FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>checkbox</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>2a</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/m/mosque/indoor/sun_alciqmvudzylvism.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/m/mosque/indoor/sun_alciqmvudzylvism.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>2b</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/darkroom/sun_aayfvwecfljutjve.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/darkroom/sun_aayfvwecfljutjve.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>2c</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/m/military_hospital/sun_atrbizhwkmbwtewo.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/m/military_hospital/sun_atrbizhwkmbwtewo.jpg</AltText>
+            </Binary>
+          </Selection>
+	  <Selection>
+                  <SelectionIdentifier>2d</SelectionIdentifier>
+                  <Text>None of the above</Text>
+          </Selection>
+
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+    <Question>
+     <QuestionIdentifier>question3</QuestionIdentifier>
+     <IsRequired>true</IsRequired>
+     <QuestionContent>
+      <FormattedContent><![CDATA[<font size="4"> In which of these 3 scenes might the following activity reasonably take place?</font>
+	<br/>
+	<br/>
+      
+      <font size="4" color="blue" >eating</font>
+      ]]></FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>checkbox</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>3a</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/s/science_museum/sun_aqlmgaohebveeqzq.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/s/science_museum/sun_aqlmgaohebveeqzq.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>3b</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/c/cafeteria/sun_abhnefiriurodluh.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/c/cafeteria/sun_abhnefiriurodluh.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>3c</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/r/riding_arena/sun_bjyldohuqazjyvvr.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/r/riding_arena/sun_bjyldohuqazjyvvr.jpg</AltText>
+            </Binary>
+          </Selection>
+	  <Selection>
+                  <SelectionIdentifier>3d</SelectionIdentifier>
+                  <Text>None of the above</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+<Question>
+     <QuestionIdentifier>question4</QuestionIdentifier>
+     <IsRequired>true</IsRequired>
+     <QuestionContent>
+      <FormattedContent><![CDATA[<font size="4"> In which of these 3 scenes might the following activity reasonably take place?</font>
+	<br/>
+	<br/>
+      
+      <font size="4" color="blue" >conducting business</font>
+      ]]></FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>checkbox</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>4a</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/o/office/sun_aezuszgtxnmsxdbk.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/o/office/sun_aezuszgtxnmsxdbk.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>4b</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/g/gasworks/sun_abkgiyqjekubkimk.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/g/gasworks/sun_abkgiyqjekubkimk.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>4c</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/p/pig_farm/sun_bxavdathzoexdcty.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/p/pig_farm/sun_bxavdathzoexdcty.jpg</AltText>
+            </Binary>
+          </Selection>
+	  <Selection>
+                  <SelectionIdentifier>4d</SelectionIdentifier>
+                  <Text>None of the above</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+<Question>
+     <QuestionIdentifier>question5</QuestionIdentifier>
+     <IsRequired>true</IsRequired>
+     <QuestionContent>
+      <FormattedContent><![CDATA[<font size="4"> Which of the following 3 scenes is characterized by the following attribute?</font>
+	<br/>
+	<br/>
+      
+      <font size="4" color="blue" >moist/ damp</font>
+      ]]></FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>checkbox</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>5a</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/desert/sand/sun_ajaenqfbsotsjqtn.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/desert/sand/sun_ajaenqfbsotsjqtn.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>5b</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/desert_road/sun_adttimkgacydipie.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/desert_road/sun_adttimkgacydipie.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>5c</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/desert/vegetation/sun_aapfaivxqoynnwwp.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/desert/vegetation/sun_aapfaivxqoynnwwp.jpg</AltText>
+            </Binary>
+          </Selection>
+	  <Selection>
+                  <SelectionIdentifier>5d</SelectionIdentifier>
+                  <Text>None of the above</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+<Question>
+     <QuestionIdentifier>question6</QuestionIdentifier>
+     <IsRequired>true</IsRequired>
+     <QuestionContent>
+      <FormattedContent><![CDATA[<font size="4"> If you only consider the shape or feeling of the 3 scenes bellow, which match the following attribute?  </font>
+	<br/>
+	<br/>
+      
+      <font size="4" color="blue" >symmetrical</font>
+      ]]></FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>checkbox</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>6a</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/c/cliff/sun_aneygfffuwkxkcqr.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/c/cliff/sun_aneygfffuwkxkcqr.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>6b</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/c/creek/sun_ahzprtdsycxhoqdq.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/c/creek/sun_ahzprtdsycxhoqdq.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>6c</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/a/abbey/sun_aakbdcgfpksytcwj.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/a/abbey/sun_aakbdcgfpksytcwj.jpg</AltText>
+            </Binary>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+    <Question>
+     <QuestionIdentifier>question7</QuestionIdentifier>
+     <IsRequired>true</IsRequired>
+     <QuestionContent>
+      <FormattedContent><![CDATA[<font size="4"> If you only consider the shape or feeling of the 3 scenes bellow, which match the following attribute? </font>
+	<br/>
+	<br/>
+      
+      <font size="4" color="blue" >semi-enclosed area</font>
+      ]]></FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>checkbox</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>7a</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/m/mosque/indoor/sun_alciqmvudzylvism.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/m/mosque/indoor/sun_alciqmvudzylvism.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>7b</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/desert/vegetation/sun_aapfaivxqoynnwwp.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/d/desert/vegetation/sun_aapfaivxqoynnwwp.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>7c</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/a/airlock/sun_aenfetxfeupuohpe.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/a/airlock/sun_aenfetxfeupuohpe.jpg</AltText>
+            </Binary>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+    <Question>
+     <QuestionIdentifier>question8</QuestionIdentifier>
+     <IsRequired>true</IsRequired>
+     <QuestionContent>
+      <FormattedContent><![CDATA[<font size="4"> Which of the 3 scenes below contains the following attribute?</font>
+	<br/>
+	<br/>
+      
+      <font size="4" color="blue" >grass</font>
+      ]]></FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>checkbox</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>8a</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/r/rectory/sun_agtdrungmteiwugb.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/r/rectory/sun_agtdrungmteiwugb.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>8b</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/l/lighthouse/sun_aeuofiqnhhknxbsa.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/l/lighthouse/sun_aeuofiqnhhknxbsa.jpg</AltText>
+            </Binary>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>8c</SelectionIdentifier>
+            <Binary>
+              <MimeType>
+                <Type>image</Type>
+                <SubType>jpg</SubType>
+              </MimeType>
+              <DataURL>http://www.cs.brown.edu/~gen/Attributes/medium_images/g/gazebo/exterior/sun_abrratvorxtnqwqi.jpg</DataURL>
+              <AltText>http://www.cs.brown.edu/~gen/Attributes/medium_images/g/gazebo/exterior/sun_abrratvorxtnqwqi.jpg</AltText>
+            </Binary>
+          </Selection>
+	  <Selection>
+                  <SelectionIdentifier>8d</SelectionIdentifier>
+                  <Text>None of the above</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+<Question>
+    <QuestionIdentifier>comments</QuestionIdentifier>
+    <QuestionContent>
+      <Text>Please help us improve this HIT by including any Questions and/or Comments (optional):</Text>
+    </QuestionContent>
+    <AnswerSpecification>
+      <FreeTextAnswer>
+        <NumberOfLinesSuggestion>10</NumberOfLinesSuggestion>
+      </FreeTextAnswer>
+    </AnswerSpecification>
+  </Question>
+</QuestionForm>
+
+
