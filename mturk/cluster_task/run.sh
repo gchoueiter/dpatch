@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 # Copyright 2008 Amazon Technologies, Inc.
 # 
@@ -14,5 +14,5 @@
 # limitations under the License.
  
 pushd ${MTURK_CMD_HOME}/bin
-./loadHITs.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 -label ${HIT_HOME}/yourtask -input ${HIT_HOME}/yourtask.input -question ${HIT_HOME}/yourtask.question -properties ${HIT_HOME}/yourtask.properties -maxhits 1
+./loadHITs.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 -label ${HIT_HOME}/$1 -input ${HIT_HOME}/$1.input -question ${HIT_HOME}/cluster.question -properties ${HIT_HOME}/cluster.properties -maxhits 400
 popd

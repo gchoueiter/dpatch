@@ -1,0 +1,83 @@
+%%
+% This takes results files for the cluster task,
+% parses the results, and saves the data to mat files.
+%
+%%
+function parse_results(results_file, save_dir)
+
+fid = fopen(results_file);
+results = textscan(fid, ['%q%q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*' ...
+                    'q%*q%*q%q%q%*q%*q%q%q%*q%*q%*q%*q%*q%q%q%q']);
+fclose(fid);
+
+cat_prefix = 'http://cs.brown.edu/~gen/nn_patches/';
+cat = results{end}{2}(length(cat_prefix)+1:end);
+[cat, rem] = strtok(cat,'/');
+cat
+
+% TODO: change this to make a results dir for each cat
+if ~exist(fullfile(save_dir, cat))
+    mkdir(fullfile(save_dir, cat))
+end
+save(fullfile(save_dir, cat, [cat '_mturk_raw_results.mat']), 'results');
+
+% make the results into images to look at
+selectedImages = cellfun(@(x) regexp(x, ',','split'), results{7}(2:end), ...
+                         'UniformOutput', false);
+selectedPatches = cellfun(@(x) cellfun(@(y) strrep(y, '.jpg',''), ...
+                                                x, 'UniformOutput', false), ...
+                                        selectedImages, 'UniformOutput', false);
+imgPre = 'http://cs.brown.edu/~gen/';
+imgPreF = '/home/gen/www/';
+
+patchJpgFs = cellfun(@(x,z) cellfun(@(y) [imgPreF x(length(imgPre)+1:end) ...
+                   y], z, 'UniformOutput', false), results{9}(2:end), ...
+                    selectedImages, 'UniformOutput', false);
+patchImgs = cellfun(@(x) cell2mat(cellfun(@(y) imread(y), x, 'UniformOutput', false)), ...
+                    patchJpgFs, 'UniformOutput', false);
+% write images
+selectedPsSaveName = cellfun(@(x,y) [imgPreF x(length(imgPre)+1:end) ...
+                    'selectedPatches_' y '.jpg'], results{9}(2:end), ...
+                             results{3}(2:end), 'UniformOutput', false);
+cellfun(@(x,y) imwrite(x, y), patchImgs, selectedPsSaveName, 'UniformOutput', ...
+        false) 
+
+% write html to look at results
+[html]=htmlimagetable(selectedPsSaveName);
+
+fhtml = fopen( fullfile('/home/gen/www/nn_patches/', cat,['results.html']), 'w');
+fwrite(fhtml, html, 'uchar');
+fclose(fhtml);
+
+% convert accept time and submit time to 
+% date ex: 'Mon Apr 08 21:10:46 EDT 2013' - 'ddd mmm dd HH:MM:SS EDT yyyy'
+acceptTime = cellfun(@(x) datevec(strrep(x, 'EDT ', ''), ['ddd mmm dd HH:' ...
+                    'MM:SS yyyy']), results{5}(2:end), 'UniformOutput', false);
+sumbitTime =  cellfun(@(x) datevec(strrep(x, 'EDT ', ''), ['ddd mmm dd HH:' ...
+                    'MM:SS yyyy']), results{6}(2:end), 'UniformOutput', ...
+                      false);
+
+timeSpent = etime(cell2mat(sumbitTime), cell2mat(acceptTime));
+
+% plot num workers vs. time per hit
+figure
+plot(timeSpent, '*')
+figure
+hist(timeSpent)
+% plot hist of hits done
+figure
+[a b c] = unique(results{8}(2:end));
+d = hist(c, length(a));
+plot(d, 'r*')
+
+% make a list of 'good workers' work time >= avg time - stddev
+
+keyboard
+% make the results into just numbers
+% check for overlap of selection - condense non-overlapping clusters
+
+% train and svm on each
+% check overlapping detectors
+% save the detector and posterior number
+
+end

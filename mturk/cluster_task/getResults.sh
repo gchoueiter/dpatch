@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 # Copyright 2008 Amazon Technologies, Inc.
 # 
@@ -14,5 +14,5 @@
 # limitations under the License.
  
 pushd ${MTURK_CMD_HOME}/bin
-./getResults.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 -successfile ${HIT_HOME}/yourtask.success -outputfile ${HIT_HOME}/yourtask.results
+./getResults.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 -successfile ${HIT_HOME}/$1.success -outputfile ${HIT_HOME}/$1.results
 popd

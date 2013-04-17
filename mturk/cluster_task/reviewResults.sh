@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash%
 #
 # Copyright 2008 Amazon Technologies, Inc.
 # 
@@ -16,5 +16,5 @@
 
 #!/usr/bin/env bash
 pushd ${MTURK_CMD_HOME}/bin
-./reviewResults.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 -resultsfile ${HIT_HOME}/yourtask.results
+./reviewResults.sh $1 $2 $3 $4 $5 $6 $7 $8 $9 -resultsfile ${HIT_HOME}/cluster.results
 popd

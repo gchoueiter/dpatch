@@ -1,0 +1,13 @@
+function [html]=htmlimagetable(img_list)
+
+html=['<html><body><table>'];
+
+for(i=1:numel(img_list))
+  if(isfield(instr,'label'))
+  label=[instr.label{i} ';'];
+  html=[html '<tr>' imgtd([ds.conf.imgsurl ds.imgs{ds.conf.currimset}(ord(i)).fullname],...
+          [label ' idx:' num2str(ord(i))]) '</tr>'];
+end
+html=[html '</table></body></html>'];
+
+end

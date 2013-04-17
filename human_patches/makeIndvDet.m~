@@ -1,0 +1,45 @@
+% This makes dpatch detectors in the same format as CMU Singh and Doersch
+% code - VisualEntityDetectors
+% From mturk responses
+function makeDetectors(human_resp)
+
+ds.conf.params= struct( ...
+  'imageCanonicalSize', 400,...% images are resized so that their smallest dimension is this size.
+  'patchCanonicalSize', {[80 80]}, ...% patches are extracted at this size.  Should be a multiple of sBins.
+  'scaleIntervals', 8, ...% number of levels per octave in the HOG pyramid 
+  'sBins', 8, ...% HOG sBins parameter--i.e. the width in height (in pixels) of each cell
+  'useColor', 1, ...% include a tiny image (the a,b components of the Lab representation) in the patch descriptor
+  'patchOverlapThreshold', 0.6, ...%detections (and random samples during initialization) with an overlap higher than this are discarded.
+  'svmflags', '-s 0 -t 0 -c 0.1');
+
+ds.conf.detectionParams = struct( ...
+  'selectTopN', false, ...
+  'useDecisionThresh', true, ...
+  'overlap', 0.4, ...% detections with overlap higher than this are discarded.
+  'fixedDecisionThresh', -1.002);
+
+% load neg ex features for train/test patches
+
+
+
+
+labels = [ones(sum(posInds), 1); ...
+ones(size(ds.initFeatsNeg, 1), 1) * -1];
+features=[ds.batch.round.posFeatures(posInds, :);ds.initFeatsNeg];
+
+fprintf('Training SVM ...  ');
+size(labels)
+size(features)
+ds.conf.params.svmflags
+model = mySvmTrain(labels, features, ds.conf.params.svmflags, false);
+[predictedLabels, accuracy, decision] = mySvmPredict(labels, ...
+                                       features, model);
+
+saveFullModel = true; %This saves the original output of libsvm to model.info.model
+model = mySvmTrain(labels, features, libsvmFlags, saveFullModel);
+
+%ds.batch.round.firstDet{dsidx}=model;
+%dets=VisualEntityDetectors(ds.batch.round.firstDet, ds.conf.params);
+
+
+end
