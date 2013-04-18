@@ -93,7 +93,7 @@ function dsmapredopen(njobs,nprocs,submitlocal)
        %ssh_cmd = sprintf(['ssh warp.hpc1.cs.cmu.edu ''%s'''], qsub_cmd);
        try
            if ds.isrecalc == 1
-                qsub_cmd=['qsub -N dsmapreducer' num2str(i) ' -l short' logstring tmpOutFName]
+                qsub_cmd=['qsub -N dsmapreducer' num2str(i) ' -l long' logstring tmpOutFName]
            else
                 qsub_cmd=['qsub -N dsmapreducer' num2str(i) ' -l vlong' logstring tmpOutFName]
            end

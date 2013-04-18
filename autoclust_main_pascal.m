@@ -2,7 +2,7 @@
 % NOTE: to use this script, set cat_str to the desired category label first.
 %distributed processing settings
 %run in parallel?
-isparallel=1;
+isparallel=0;
 %if isparallel=1, number of parallel jobs
 nprocs=200;
 %if isparallel=1, whether to run on multiple machines or locally
@@ -101,7 +101,7 @@ if(isparallel&&(~dsmapredisopen()))
     dsmapredopen(nprocs, 1, ~isdistributed);
 end
 %check all jobs are running
-keyboard
+%keyboard
 if(~dsfield(ds,'initFeats'))
   disp('sampling positive patches');
   ds.sample=struct();

@@ -1,7 +1,7 @@
 % this is a slightly different version of TY_conv_func
 %  This runs the conv_func on the input image with the dpatch
 %  specified by patch_ind
-function [feat, imsize] = conv_func(img, imgsHome, detectors, patch_ind);
+function  conv_func(img, img_name, feat_save_path, detectors);%[feat, imsize] =
 %   img:    the input image
 %   patch_ind: index of patch to use from npatch
 %   detectors: this contains all the classifiers ad the params from DPatch discovery code
@@ -47,9 +47,29 @@ global ds;
 
 npatch = detectors.firstLevModels;
 params = detectors.params;
-feats = constructFeaturePyramid(img, params);  % reuse the code from dpatch 
+   last_stroke = strfind(img_name, '/');
+   last_stroke = last_stroke(end);
 
-for numDet = patch_ind
+
+feat_fname = fullfile(feat_save_path, sprintf('%s_featurePyramid_feat.mat', ...
+                                           img_name(last_stroke:end-4)));
+
+if exist(feat_fname, 'file')
+    load(feat_fname);
+else
+    feats = constructFeaturePyramid(img, params);  % reuse the code from
+                                                   % dpatch 
+    save( feat_fname, 'feats');
+end
+
+for numDet = 1:length(detectors.firstLevModels.rho) %patch_ind
+    disp(['cur patch: ' num2str(numDet)]);
+   save_name = fullfile(feat_save_path, sprintf('%s_dpatch_tmp_feat_%d.mat', ...
+                                           img_name(last_stroke:end-4), numDet));
+   if exist(save_name, 'file')
+       disp( ['temp patch ' num2str(numDet) ' already calculated']);
+       continue;
+   end
     %keyboard
     w = reshape(full(npatch.w(numDet,:)), [8,8,33]);  % current patch discovery code has 31 (hog) + 2 (color) dims features
     rho = npatch.rho(numDet);
@@ -76,6 +96,10 @@ for numDet = patch_ind
     % feat{# of det}.svmout{# of pyramid level}
     feat.svmout = res;
     
+    %keyboard    
+    feat.scales = feats.scales;
+    imsize = size(img);
+    save(save_name, 'feat', 'imsize');    
 %     % visualization
 %     % comment this when it is ready to run
 %     figure(1);
@@ -93,7 +117,7 @@ for numDet = patch_ind
 end
 
 
-feat.scales = feats.scales;
-imsize = size(img);
+% feat.scales = feats.scales;
+% imsize = size(img);
 
 end

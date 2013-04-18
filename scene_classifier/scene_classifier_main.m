@@ -1,15 +1,26 @@
 % tests scene classification 
+%% IMPORTANT: run extract feature for all images first. The extract
+%% feature here is just a catch in case.
 try
 global sc;
-ranking_type = {'overallcounts', 'posterior'};
-for rank = 2%1:2
+ranking_type = {'overallcounts', 'posterior', 'nearestneighbors'};
+svm_type = {'linear', 'polynomial', 'rbf', 'sigmoid'};
+for rank = 1:3
+for sub = 1:4
 data_path = ...%'/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/';
             ['/data/hays_lab/finder/Discriminative_Patch_Discovery/' ...
              '15_scene_patches/' ranking_type{rank} '/'];
-load(fullfile(data_path, 'detectors.mat'));
+if rank ~=3
+    load(fullfile(data_path, 'detectors.mat'));
+    if sub>1
+        continue;
+    end
+else
+    load(fullfile(data_path, ['detectors_' svm_type{sub} '.mat']));
+end
 
-sc.njobs = 150;
-sc.isparallel = 1;
+sc.njobs = 900;
+sc.isparallel = 0;
 sc.log_path = '/data/hays_lab/finder/Discriminative_Patch_Discovery/15scene/logs/';
 if(~exist(sc.log_path, 'dir'))
     mkdir(sc.log_path);    
@@ -17,7 +28,7 @@ end
 
 % for 15 classes dataset
 sc.img_path = '/data/hays_lab/15_scene_dataset/';
-sc.save_path = '/data/hays_lab/finder/Discriminative_Patch_Discovery/15scene/';
+sc.save_path = '/data/hays_lab/finder/Discriminative_Patch_Discovery/15scene_classifiers/';
 sc.feat_path   = fullfile(sc.img_path, 'features/');%sc.save_path, 'features/');
 sc.kernel_path = fullfile(sc.save_path, 'kernels/');
 if(~exist(sc.kernel_path,'dir'))
@@ -29,7 +40,12 @@ if(~exist(sc.svm_path,'dir'))
 end
 sc.dataset = '/home/gen/dpatch/dataset15.mat';
 load(sc.dataset);
-sc.detectors_fname = fullfile(data_path, 'detectors.mat');
+if rank == 3
+    dpatch_svm_type = ['_' svm_type{sub}];
+else
+    dpatch_svm_type = '';
+end
+sc.detectors_fname = fullfile(data_path, ['detectors' dpatch_svm_type '.mat']);
 % include libsvm for training svms
 addpath(genpath('/home/gen/libsvm-mat-3.0-1'));
 
@@ -88,7 +104,14 @@ nind = 1;
 for num_patches = num_training_patches
     patches_to_include = zeros(length(detectors.firstLevModels.info),1);
     for cat = 1:length(scene_cats)
-        cat_inds = find(cell2mat(cellfun(@(x) ~isempty(strfind(x{1}, scene_cats{cat})),detectors.patch_paths, 'UniformOutput', 0)));
+        if isfield(detectors, 'patch_paths')
+            cat_inds = find(cell2mat(cellfun(@(x) ~isempty(strfind(x{1}, ...
+                                                              scene_cats{cat})),detectors.patch_paths, 'UniformOutput', 0)));
+        else
+            cat_inds = (cat-1)*100+1:(cat-1)*100+num_patches;
+            numel(cat_inds)
+            num_patches
+        end
         if length(cat_inds) > num_patches
             cat_inds = cat_inds(1:num_patches);
         end
@@ -109,7 +132,13 @@ if ~exist([sc.svm_path 'SVM_Result_' sc.feat(num_feat).name '_' sc.feat(num_feat
 clear feature_vector K K_test
 feat_matrix_name = sprintf('%s_image_features.mat',sc.feat(num_feat).name);
 if(~exist(fullfile(sc.feat_path,feat_matrix_name), 'file'))
-    feature_vector = pack_features([sc.feat(num_feat).name '_' ranking_type{rank}],imgs,patches_to_include);
+    if rank == 3
+        dpatch_svm_type = ['_' svm_type{sub}];
+    else
+        dpatch_svm_type = '';
+    end
+    feature_vector = pack_features([sc.feat(num_feat).name '_' ranking_type{rank} ...
+                   dpatch_svm_type],imgs,patches_to_include);
     save(feat_matrix_name, 'feature_vector');
 else
     load(feat_matrix_name);
@@ -197,15 +226,16 @@ all_perf = all_perf(:, num_training_patches,rank);
 all_ap = all_ap(:, num_training_patches,rank);
 save(save_name, 'all_perf', 'all_ap');
 
-figure
-plot(num_training_patches_used,all_perf','-s')
-ylabel('Performance (%)')
-xlabel('Number of Patches')
-legend(sc.feat(:).kernel_name, 4)
-keyboard
+% figure
+% plot(num_training_patches_used,all_perf','-s')
+% ylabel('Performance (%)')
+% xlabel('Number of Patches')
+% legend(sc.feat(:).kernel_name, 4)
+% keyboard
+%end subrank
+end
 %end rank
 end
-
 catch e
     disp([' scene_classifer_main broke! we are keyboarding out at the place ' ...
           'where the error happened...']);

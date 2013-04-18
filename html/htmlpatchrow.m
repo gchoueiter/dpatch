@@ -160,6 +160,7 @@ try
     end
   end
   html=[html '</tr>\n'];
+  %keyboard
 catch ex
   dsprinterr
 end

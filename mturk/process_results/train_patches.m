@@ -3,6 +3,9 @@
 % Called from parse_results.m
 %
 disp('Training all patch detectors...');
+cat_dir = ['/data/hays_lab/finder/' ...
+                    'Discriminative_Patch_Discovery/15_scene_patches/' ...
+                    'nearestneighbors/' cat_str '/autoclust_main_nn_only_out/'];
 for clusterNum = 1:length(nonOverlapClusters)
     for selectNum = 1:length(nonOverlapClusters{clusterNum})
         selectedPatches = sprintf('%s-',nonOverlapClusters{clusterNum}{selectNum}{:});

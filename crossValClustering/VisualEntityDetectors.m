@@ -77,8 +77,10 @@ classdef VisualEntityDetectors < handle
       if(~isfield(detectionParams,'removeFeatures'))
         detectionParams.removeFeatures=0;
       end
+
       results = detectPresenceUsingEntDet(im, ...
         detectors, detectionParams);
+
     end
     
     function voteSpace = doVotingForResult(obj, ...

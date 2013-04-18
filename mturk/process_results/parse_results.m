@@ -14,9 +14,21 @@ fid = fopen(results_file);
 results = textscan(fid, ['%q%q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*q%*' ...
                     'q%*q%*q%q%q%*q%*q%q%q%*q%*q%*q%*q%*q%q%q%q']);
 fclose(fid);
-
+for i = 1:length(results)
+    firstLine{i} = results{i}{1};
+end
+baseurlInd = find(cellfun(@(x) strcmp('Answer.baseurl',x), firstLine));
+resultsInd = find(cellfun(@(x) strcmp('Answer.results',x), firstLine));
+assignmentIdInd = find(cellfun(@(x) strcmp('assignmentid',x), ...
+                               firstLine));
+acceptTimeInd = find(cellfun(@(x) strcmp('assignmentaccepttime',x), ...
+                             firstLine));
+submitTimeInd = find(cellfun(@(x) strcmp('assignmentsubmittime',x), ...
+                             firstLine));
+workerIdInd = find(cellfun(@(x) strcmp('Answer.workerId',x), ...
+                             firstLine));
 cat_str_prefix = 'http://cs.brown.edu/~gen/nn_patches/';
-cat_str = results{end}{2}(length(cat_str_prefix)+1:end);
+cat_str = results{baseurlInd}{2}(length(cat_str_prefix)+1:end);
 [cat_str, rem] = strtok(cat_str,'/');
 cat_str
 
@@ -27,23 +39,23 @@ end
 save(fullfile(save_dir, cat_str, [cat_str '_mturk_raw_results.mat']), 'results');
 
 % make the results into images to look at
-selectedImages = cellfun(@(x) regexp(x, ',','split'), results{7}(2:end), ...
+selectedImages = cellfun(@(x) regexp(x, ',','split'), results{resultsInd}(2:end), ...
                          'UniformOutput', false);
 selectedPatches = cellfun(@(x) cellfun(@(y) strrep(y, '.jpg',''), ...
                                                 x, 'UniformOutput', false), ...
                                         selectedImages, 'UniformOutput', false);
 imgPre = 'http://cs.brown.edu/~gen/';
 imgPreF = '/home/gen/www/';
-
 patchJpgFs = cellfun(@(x,z) cellfun(@(y) [imgPreF x(length(imgPre)+1:end) ...
-                   y], z, 'UniformOutput', false), results{9}(2:end), ...
+                   y], z, 'UniformOutput', false), results{baseurlInd}(2:end), ...
                     selectedImages, 'UniformOutput', false);
 patchImgs = cellfun(@(x) cell2mat(cellfun(@(y) imread(y), x, 'UniformOutput', false)), ...
                     patchJpgFs, 'UniformOutput', false);
+
 % write images
 selectedPsSaveName = cellfun(@(x,y) [imgPreF x(length(imgPre)+1:end) ...
-                    'selectedPatches_' y '.jpg'], results{9}(2:end), ...
-                             results{3}(2:end), 'UniformOutput', false);
+                    'selectedPatches_' y '.jpg'], results{baseurlInd}(2:end), ...
+                             results{assignmentIdInd}(2:end), 'UniformOutput', false);
 cellfun(@(x,y) imwrite(x, y), patchImgs, selectedPsSaveName, 'UniformOutput', ...
         false) 
 
@@ -57,9 +69,9 @@ fclose(fhtml);
 % convert accept time and submit time to 
 % date ex: 'Mon Apr 08 21:10:46 EDT 2013' - 'ddd mmm dd HH:MM:SS EDT yyyy'
 acceptTime = cellfun(@(x) datevec(strrep(x, 'EDT ', ''), ['ddd mmm dd HH:' ...
-                    'MM:SS yyyy']), results{5}(2:end), 'UniformOutput', false);
+                    'MM:SS yyyy']), results{acceptTimeInd}(2:end), 'UniformOutput', false);
 sumbitTime =  cellfun(@(x) datevec(strrep(x, 'EDT ', ''), ['ddd mmm dd HH:' ...
-                    'MM:SS yyyy']), results{6}(2:end), 'UniformOutput', ...
+                    'MM:SS yyyy']), results{submitTimeInd}(2:end), 'UniformOutput', ...
                       false);
 
 timeSpent = etime(cell2mat(sumbitTime), cell2mat(acceptTime));
@@ -71,7 +83,7 @@ timeSpent = etime(cell2mat(sumbitTime), cell2mat(acceptTime));
 % hist(timeSpent)
 % % plot hist of hits done
 % figure
-[uniqueWorkers uwi_ind uwj_ind] = unique(results{8}(2:end));
+[uniqueWorkers uwi_ind uwj_ind] = unique(results{workerIdInd}(2:end));
 numHitsDone = hist(uwj_ind, length(uniqueWorkers));
 [max_hits, max_i] = max(numHitsDone);
 disp(['max num hits done: ' num2str(max_hits(1)) ' by ' uniqueWorkers{max_i(1)}]);
@@ -142,7 +154,7 @@ save(fullfile(save_dir, cat_str, [cat_str '_mturk_parsed_results.mat']), 'result
 
 numFinDets = 0;
 tic;
-while(numFinDets < numC)
+while(numFinDets < sum(cellfun(@(x) length(x), nonOverlapClusters))*4)
     % train an svm on each
     train_patches;
 
@@ -151,12 +163,15 @@ while(numFinDets < numC)
                         'Discriminative_Patch_Discovery/15_scene_patches/' ...
                         'nearestneighbors/' cat_str '/' ...
                'autoclust_main_nn_only_out/'];
-    [status,jobs] = system('qstat -s r -q short.q |wc -l');
-    while(jobs > 0)
+    [status,jobs] = system('qstat -q short.q |wc -l');
+    while(str2num(jobs) > 0)
+        disp('...');
         pause(10);
-    ens
-    finDets = dir([cat_dir 'cluster_detectors']);
-    numFinDets = length(finDets.name) - 2; 
+        [status,jobs] = system('qstat -q short.q |wc -l');
+    end
+    disp('finished this round');
+    finDets = subdir([cat_dir 'cluster_detectors/*.mat']);
+    numFinDets = length(finDets)
     toc;
 end
 
@@ -177,6 +192,37 @@ params= struct( ...
   'useColor', 1, ...% include a tiny image (the a,b components of the Lab representation) in the patch descriptor
   'patchOverlapThreshold', 0.6, ...%detections (and random samples during initialization) with an overlap higher than this are discarded.
   'svmflags', '');
+detectionParams = struct( ...
+  'selectTopN', false, ...
+  'useDecisionThresh', true, ...
+  'overlap', 0.4, ...% detections with overlap higher than this are discarded.
+  'fixedDecisionThresh', -1.002);
+
+%functions later won't work without this
+%global ds;
+ds.conf.params = params;
+dssetout(cat_dir);
+% load valset images - make them a cell array of double mats
+tic;
+load('/home/gen/dpatch/dataset15.mat'); 
+scene_cats=unique(arrayfun(@(x) x.city,imgs,'UniformOutput', ...
+                           false));
+imgs_train=[]; 
+for i = 1:length(scene_cats)
+train_inds = find(~arrayfun(@(x) isempty(strfind(x.city, scene_cats{i})), ...
+                     imgs));
+train_inds = train_inds(1:150);
+imgs_train = horzcat(imgs_train, imgs(train_inds));
+end
+imgs=imgs_train;
+valset_inds = 1:2:length(imgs);
+ds.myiminds = 1:length(valset_inds);
+for vi = 1:length(valset_inds)
+    valset{vi} = im2double(imread(imgs(vi).fullpath));
+end
+toc;
+iscatimg =ismember({imgs(valset_inds).city},cat_str);
+%ds.ispos = iscatimg;
 
 for kt = 1:length(kernel_types)
     idx = 1;
@@ -184,7 +230,7 @@ for kt = 1:length(kernel_types)
         for selectNum = 1:length(nonOverlapClusters{clusterNum})
             selectedPatches = sprintf('%s-',nonOverlapClusters{clusterNum}{selectNum}{:});
 
-            load(fullfile(cat_dir, 'cluster_detectors', ['cluster' clusterNum], ...
+            load(fullfile(cat_dir, 'cluster_detectors', ['cluster' num2str(clusterNum)], ...
                    [selectedPatches kernel_types{kt}.name '.mat']));
             clustDets{idx}=model;
             %ds.batch.round.firstResult{dsidx} = struct('predictedLabels',
@@ -194,14 +240,41 @@ for kt = 1:length(kernel_types)
         end
     end
     params.svmflags = ['-t ' kernel_types{kt}.t ' -s 0 -c 0.1'];
-    data=VisualEntityDetectors(clustDets, params);
-    % get posterior score
-    %ds.detsimple{dsidx}=simplifydets(ds.dets.detectPresenceInImg(double(getimg(ds.myiminds(dsidx)))/256,ds.conf.detectionParams),ds.myiminds(dsidx));
-    % sort them by  posterior score 
-    % check for overlap
+    
+    dets=VisualEntityDetectors(clustDets, params);
+    
+    %%%%%% THIS PART TAKES FOREVER - probably need to start ds parallel
+    %%%%%% jobs and work with that system.
+    %%%%%% TODO: rewrite this so it uses your feature extractor. Compare
+    %%%%%% your feature extractor to the one in detectPresenceUsingEntDet
+    % % get posterior score:
+    % %for all images in the val set, run detectPresence (this applies all
+    % %detectors to images)
+    % for imind = 1:length(valset)
+    %     ds.detsimple{imind}=simplifydets(dets.detectPresenceInImg(valset{imind},detectionParams),imind);
+    % end
+    % maxdet=size(dets.firstLevModels.w,1);
+    % [topn,posCounts,negCounts]=readdetsimple(maxdet,-.2,struct('oneperim',1, ...
+    %                                               'issingle',1,'nperdet', ...
+    %                                               250, 'imgs', imgs(valset_inds)));
+    % alldetections=[topn{1}(:);topn{2}(:)]';
+    % for(i=unique([alldetections.detector]))
+    %   counts(i,1)=sum(posCounts{1}(i,:));
+    %   counts(i,2)=sum(negCounts(i,:));
+    % end
+    % post=(counts(:,1)+1)./(sum(counts,2)+2)
+
+    % % sort them by  posterior score 
+    % [~,detord]=sort(post,'descend');
+
+    % % check for overlap
+    % [overl groups affinities]=findOverlapping(dets(detord),struct('findNonOverlap',1));
     % save dictionary
-    save([ 'detsDclust.mat'],'data');
-    % print webpage of sorted detectors
+    data = dets;
+    save(fullfile(cat_dir, 'cluster_detectors',['detsDclust_' ...
+                        kernel_types{kt}.name '.mat']),'data', '-v7.3');
+    % print webpage of sorted detectors with their outputs
+
 end
 
 catch e

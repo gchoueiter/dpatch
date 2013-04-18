@@ -68,6 +68,7 @@ for(drdp_j=mytosave(:)')
   %html=[html '</tr>'];
 end
 html=[html '</table>'];
+%keyboard
 if(drdp_split)
   htmlall{end+1}=html;
   {'ds.bestbin.bbhtml','htmlall'};dsup;

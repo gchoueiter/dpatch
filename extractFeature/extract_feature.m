@@ -132,7 +132,7 @@ feat = pack_feats(final_feats);
 
  %for all the dpatches, while there are jobs
  %keyboard
-for p = 1:length(GVARS.detectors.firstLevModels.info)
+for p = 1%:length(GVARS.detectors.firstLevModels.info)
    if(GVARS.isparallel)
        job_avail = check_jobs_avail();
        while(job_avail == 0)
@@ -142,7 +142,7 @@ for p = 1:length(GVARS.detectors.firstLevModels.info)
     end   
        % do the conv. func
        % save to result 
-       launch_dpatch_eval( p); 
+       launch_dpatch_eval(); 
 end
 
 end
@@ -204,7 +204,7 @@ for ft = 1:length(tmp_feats)
             mp_feat(r,c) = max(max(cur_feat(r:r+mp_dim-1, c:c+mp_dim-1)));
         end
     end
-    %11    keyboard
+    %keyboard
     mp_feat = reshape(mp_feat,(rows-mp_dim+1)*(cols-mp_dim+1),1);
     final_feats(ft) = {struct('feat',mp_feat)};
 end

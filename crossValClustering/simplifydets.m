@@ -4,6 +4,7 @@
 % format: a single struct array with a minimal number of
 % fields. 
 function [res]=simplifydets(detections,imidx,assignedClust)
+
   curridx=1;
   if(isfield(detections(1),'x1'))
     %this is just the metadata part of the detections struct

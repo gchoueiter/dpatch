@@ -12,9 +12,15 @@ for i = 1:length(imgs)
     if(~exist(feat_save_path, 'file'))        
         switch feat_name(1:6)
             case 'dpatch'
-              %                keyboard
-              fprintf('extracting feature for image: %s\n', imgs(i).fullname);
-              extract_feature(imgs(i).fullname(1:end-4), sc.img_path,...
+              %keyboard
+              fprintf('extracting feature for image: %s\n', ...
+                      imgs(i).fullname);
+              img_name = imgs(i).fullname;
+              % this adds .jpg if there is no extension or leaves it the
+              % same if there is
+              img_name = strrep(img_name, '.jpg', '');
+              img_name = [img_name '.jpg'];
+              extract_feature(img_name, sc.img_path,...
                                 fullfile(sc.feat_path, feat_name), ...
                                 sc.detectors_fname, sc.njobs, sc.isparallel, sc.log_path);
         end        
@@ -30,11 +36,13 @@ for i = 1:length(imgs)
             fprintf(['number of requested patches and feature length do not ' ...
                      'match: num_patches = %d and feat_length = %d \n Recalculating patch in case... \n'],length(patches_to_include), ...
                     length(feat));
-            keyboard
+            %keyboard
             switch feat_name(1:6)
                 case 'dpatch'
                   %                keyboard
-                  fprintf('extracting feature for image: %s\n', imgs(i).fullname);
+                  fprintf('extracting feature for image: %s\n', ...
+                          imgs(i).fullname);
+                  %keyboard
                   extract_feature(imgs(i).fullname(1:end-4), sc.img_path,...
                                     fullfile(sc.feat_path, feat_name), ...
                                     sc.detectors_fname, sc.njobs, sc.isparallel, sc.log_path);

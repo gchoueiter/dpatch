@@ -1,4 +1,5 @@
-for (( i =2856265-499 ; i <=2856265 ; i++ ))
+echo "hey hey"
+for (( i = 2921000 ; i <= 2922000 ; i++ ))
 do
     qdel "$i"
 done

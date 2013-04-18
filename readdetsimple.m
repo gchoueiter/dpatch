@@ -23,6 +23,7 @@
 
 function [topn,posCount,negCount,posCtIds]=readdetsimple(maxdetector,ctthresh,conf)
   ispos=dsload('.ds.ispos');
+  
   if(~exist('ctthresh','var'))
     ctthresh=0;
   end
@@ -41,6 +42,7 @@ function [topn,posCount,negCount,posCtIds]=readdetsimple(maxdetector,ctthresh,co
     if(isfield(conf,'nperdet'))
       nperdet=conf.nperdet;
     end
+  
   end
   %if(~iscell(cat))
   %  cat={cat};
@@ -81,7 +83,14 @@ function [topn,posCount,negCount,posCtIds]=readdetsimple(maxdetector,ctthresh,co
   %detsbydetector=cell(maxdetector,1);
   detsbydetector=repmat({repmat({{}},maxdetector,1)},nouts,1);
   locstouched=[];
-  imgs=dsload(['.ds.imgs{' num2str(dsload('.ds.conf.currimset')) '}']);
+  % change by gen: so I can use this outside the ds structure
+  if(exist('conf','var'))
+          if(isfield(conf,'imgs'))
+              imgs = conf.imgs;
+          end
+  else
+    imgs=dsload(['.ds.imgs{' num2str(dsload('.ds.conf.currimset')) '}']);
+  end
   for(i=1:numel(ds.myiminds))
     a=tic;
     tic
@@ -135,6 +144,7 @@ function [topn,posCount,negCount,posCtIds]=readdetsimple(maxdetector,ctthresh,co
         %if(loc==0)
         %  loc=nouts;
         %end
+
         loc=double(ispos(ds.myiminds(i)));%ismember({imgs(ds.myiminds(i)).city},cat);
         if(issingle)
           loc=min(loc,1);
@@ -183,6 +193,7 @@ function [topn,posCount,negCount,posCtIds]=readdetsimple(maxdetector,ctthresh,co
   %    topn{i}=structcell2mat(topn{i});
   %  end
   %end
+
   for(j=1:maxdetector)
     currdecs=[];
     for(i=1:numel(topn))
@@ -198,6 +209,8 @@ function [topn,posCount,negCount,posCtIds]=readdetsimple(maxdetector,ctthresh,co
       minthresh(j)=-1;
     end
   end
+
+
   for(i=1:numel(topn))
     if(iscell(topn{i}))
       topn{i}=structcell2mat(topn{i});
@@ -222,4 +235,5 @@ function [topn,posCount,negCount,posCtIds]=readdetsimple(maxdetector,ctthresh,co
     topn=topn{1};
   end
   %end
+keyboard
 end
