@@ -1,6 +1,6 @@
-\documentclass[10pt]{article}%[10pt,twocolumn,letterpaper]{article}
+\documentclass[10pt,twocolumn,letterpaper]{article}
 
-%\usepackage{cvpr}
+\usepackage{cvpr}
 \usepackage{times}
 \usepackage{epsfig}
 \usepackage{graphicx}
@@ -22,19 +22,20 @@
 \usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
 
 
-% \cvprfinalcopy % *** Uncomment this line for the final submission
+\cvprfinalcopy % *** Uncomment this line for the final submission
 
-\def\cvprPaperID{} % *** Enter the CVPR Paper ID here
+%\def\cvprPaperID{} % *** Enter the CVPR Paper ID here
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
 
 % Pages are numbered in submission mode, and unnumbered in camera-ready
-%\ifcvprfinal\pagestyle{empty}\fi
+\ifcvprfinal\pagestyle{empty}\fi
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{}
+\title{Using humans to make mid-level features}
 
-\author{.}
+\author{Genevieve Patterson\textsuperscript{1} \quad Tsung-Yi Lin\textsuperscript{2} \quad James Hays\textsuperscript{1}\\
+ Brown University\textsuperscript{1} \quad University of California, San Diego\textsuperscript{2}}
 
 \maketitle
 % \thispagestyle{empty}
@@ -44,15 +45,13 @@
 
 \end{abstract}
 
-Abstract:
-
 Section 1, Intro:
-(1) Discriminative patches are hot. [citations]
+(1) Discriminative patches are hot. \cite{singh2012unsupervised, doersch2012makes, juneja13blocks}
 (2) They have demonstrated state of the art performance for various recognition tasks. [examples, citations].
 (3) What is the big idea behind these representations? How do they relate to bag of words models?
 (4) While there are several proposed methods to discover discriminative patches [examples, citations], we examine an interesting alternative -- having non-expert humans-in-the-loop to tell us which visual elements they think are discriminative. 
 
-(5) Relation to other human-in-the-loop methods. Humans (possibly non expert, crowdsourced humans) are commonly used in vision algorithms at two stages (a) annotation time, either exhaustively annotating a dataset or providing the most informative annotations in an "active learning" framework or (b) test time, coupled with a computational method (e.g. visipedia) to improve human accuracy and / or reduce human effort. In contrast, we put humans in the loop at neither annotation time or test time, but rather at "representation discovery" time. The humans are directly telling the computer which visual elements should be discriminative. This has some similarity to part-based annotation of visual phenomena, except we don't require any explicit semantic meaning for the parts, and in our initial experiments the humans never even see entire images. Putting humans "in the loop" at this stage in a recognition algorithm, is, to the best of our knowledge, never before studied.
+(5) Relation to other human-in-the-loop methods \cite{gingold2012micro, branson2010visual, kovashka2012whittlesearch},. Humans (possibly non expert, crowdsourced humans) are commonly used in vision algorithms at two stages (a) annotation time, either exhaustively annotating a dataset or providing the most informative annotations in an "active learning" framework or (b) test time, coupled with a computational method (e.g. visipedia) to improve human accuracy and / or reduce human effort. In contrast, we put humans in the loop at neither annotation time or test time, but rather at "representation discovery" time. The humans are directly telling the computer which visual elements should be discriminative. This has some similarity to part-based annotation of visual phenomena, except we don't require any explicit semantic meaning for the parts, and in our initial experiments the humans never even see entire images. Putting humans "in the loop" at this stage in a recognition algorithm, is, to the best of our knowledge, never before studied.
 
 Section 2, Approach:
 More specifics about our starting point (CMU method), and how we put humans in the loop, and how we learn from human annotations, and how the human-based learning compares to the cross-validation-based learning (which is probably the most complicated, most accurate way to learn these models)
@@ -63,24 +62,13 @@ What if the human filtered patches are consistent concepts, but they're not clos
 
 Results:
 With all computer discovered patches, X% accuracy. With all human discovered patches, Y% accuracy. Probably not a big difference. But maybe the difference is bigger if we only take the top k patches from each? 
-Abstract:
 
 
-Section 1, Intro:
-(1) Discriminative patches are hot. [citations]
-(2) They have demonstrated state of the art performance for various recognition tasks. [examples, citations].
-(3) What is the big idea behind these representations? How do they relate to bag of words models?
-(4) While there are several proposed methods to discover discriminative patches [examples, citations], we examine an interesting alternative -- having non-expert humans-in-the-loop to tell us which visual elements they think are discriminative. 
+\textbf{Acknowledgements.} We thank Hari Narayanan (Brown Univ.) for his insights and contributions in the data annotation process. Genevieve Patterson is supported by the Department of Defense (DoD) through the National Defense Science \& Engineering Graduate Fellowship (NDSEG) Program. This work is also funded by NSF CAREER Award 1149853 to James Hays. 
 
-(5) Relation to other human-in-the-loop methods. Humans (possibly non expert, crowdsourced humans) are commonly used in vision algorithms at two stages (a) annotation time, either exhaustively annotating a dataset or providing the most informative annotations in an "active learning" framework or (b) test time, coupled with a computational method (e.g. visipedia) to improve human accuracy and / or reduce human effort. In contrast, we put humans in the loop at neither annotation time or test time, but rather at "representation discovery" time. The humans are directly telling the computer which visual elements should be discriminative. This has some similarity to part-based annotation of visual phenomena, except we don't require any explicit semantic meaning for the parts, and in our initial experiments the humans never even see entire images. Putting humans "in the loop" at this stage in a recognition algorithm, is, to the best of our knowledge, never before studied.
+{\small%\footnotesize
+\bibliographystyle{ieee}
+\bibliography{dpatch}
+}
 
-Section 2, Approach:
-More specifics about our starting point (CMU method), and how we put humans in the loop, and how we learn from human annotations, and how the human-based learning compares to the cross-validation-based learning (which is probably the most complicated, most accurate way to learn these models)
-
-How do we actually turn the human filtering into discriminative patch classifiers? One classifier per HIT? Or have a stronger requirement on consensus?
-
-What if the human filtered patches are consistent concepts, but they're not close enough together in the feature space? Can we do an optimization to translate (or rotate, or scale) each example in order to maximize their similarity in feature space before training the classifier? Can we train a non-linear classifier?
-
-Results:
-With all computer discovered patches, X% accuracy. With all human discovered patches, Y% accuracy. Probably not a big difference. But maybe the difference is bigger if we only take the top k patches from each? 
 \end{document}
