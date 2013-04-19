@@ -1,0 +1,76 @@
+// Bibliography of papers related to DPatch research
+
+@incollection{singh2012unsupervised,
+  title={Unsupervised discovery of mid-level discriminative patches},
+  author={Singh, Saurabh and Gupta, Abhinav and Efros, Alexei A},
+  booktitle={Computer Vision--ECCV 2012},
+  pages={73--86},
+  year={2012},
+  publisher={Springer}
+}
+
+@article{doersch2012makes,
+  title={What makes Paris look like Paris?},
+  author={Doersch, Carl and Singh, Saurabh and Gupta, Abhinav and Sivic, Josef and Efros, Alexei A},
+  journal={ACM Transactions on Graphics (TOG)},
+  volume={31},
+  number={4},
+  pages={101},
+  year={2012},
+  publisher={ACM}
+}
+
+@inproceedings{juneja13blocks,
+  Author    = {M. Juneja and A. Vedaldi and C. V. Jawahar and A. Zisserman},
+  Title     = {Blocks that Shout: Distinctive Parts for Scene Classification},
+  Booktitle = {Proceedings of the {IEEE} Conf.
+               on Computer Vision and Pattern Recognition ({CVPR})},
+  Year      = {2013}}
+
+
+@article{gingold2012micro,
+  title={Micro perceptual human computation for visual tasks},
+  author={Gingold, Yotam and Shamir, Ariel and Cohen-Or, Daniel},
+  journal={ACM Transactions on Graphics (TOG)},
+  volume={31},
+  number={5},
+  pages={119},
+  year={2012},
+  publisher={ACM}
+}
+
+@inproceedings{malisiewicz2011ensemble,
+  title={Ensemble of exemplar-svms for object detection and beyond},
+  author={Malisiewicz, Tomasz and Gupta, Abhinav and Efros, Alexei A},
+  booktitle={Computer Vision (ICCV), 2011 IEEE International Conference on},
+  pages={89--96},
+  year={2011},
+  organization={IEEE}
+}
+
+@incollection{branson2010visual,
+  title={Visual recognition with humans in the loop},
+  author={Branson, Steve and Wah, Catherine and Schroff, Florian and Babenko, Boris and Welinder, Peter and Perona, Pietro and Belongie, Serge},
+  booktitle={Computer Vision--ECCV 2010},
+  pages={438--451},
+  year={2010},
+  publisher={Springer}
+}
+
+@inproceedings{kovashka2012whittlesearch,
+  title={WhittleSearch: Image search with relative attribute feedback},
+  author={Kovashka, Adriana and Parikh, Devi and Grauman, Kristen},
+  booktitle={Computer Vision and Pattern Recognition (CVPR), 2012 IEEE Conference on},
+  pages={2973--2980},
+  year={2012},
+  organization={IEEE}
+}
+@inproceedings{lazebnik2006beyond,
+  title={Beyond bags of features: Spatial pyramid matching for recognizing natural scene categories},
+  author={Lazebnik, Svetlana and Schmid, Cordelia and Ponce, Jean},
+  booktitle={Computer Vision and Pattern Recognition, 2006 IEEE Computer Society Conference on},
+  volume={2},
+  pages={2169--2178},
+  year={2006},
+  organization={IEEE}
+}
