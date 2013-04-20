@@ -1,0 +1,6 @@
+load('dataset15.m')
+
+
+extract_feature(img_name, sc.img_path,...
+                                fullfile(sc.feat_path, feat_name), ...
+                                sc.detectors_fname, sc.njobs, sc.isparallel, sc.log_path);

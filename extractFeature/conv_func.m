@@ -57,8 +57,19 @@ feat_fname = fullfile(feat_save_path, sprintf('%s_featurePyramid_feat.mat', ...
 if exist(feat_fname, 'file')
     load(feat_fname);
 else
-    feats = constructFeaturePyramid(img, params);  % reuse the code from
-                                                   % dpatch 
+    %% this is a hack ! take it out later
+    if sum(sum(img)) == 0;
+
+        load(fullfile(['/data/hays_lab/15_scene_dataset/features/' ...
+                       'dpatch_nearestneighbors_linear/'], ...
+                      sprintf('%s/%s_featurePyramid_feat.mat', ...
+                              img_name(1:end-4), img_name(last_stroke:end-4))));
+
+    else
+       feats = constructFeaturePyramid(img, params);  % reuse the code
+                                                       % from dpatch
+    end
+
     save( feat_fname, 'feats');
 end
 

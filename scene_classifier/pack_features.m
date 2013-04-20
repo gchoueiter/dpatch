@@ -9,6 +9,7 @@ for i = 1:length(imgs)
     
     feat_save_path = fullfile(sc.feat_path, feat_name, [imgs(i).fullname(1:end-4) '.mat']);
     % if the feature doesn't exist, calculate it
+    %    keyboard
     if(~exist(feat_save_path, 'file'))        
         switch feat_name(1:6)
             case 'dpatch'

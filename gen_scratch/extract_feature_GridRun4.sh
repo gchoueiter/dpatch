@@ -16,11 +16,11 @@
 # ================= RUN GRID JOB ================
 
 matlabpath=/local/bin/matlab-r2011b
-echo "EXECUTING COMMAND: extract_feature_GridWrapper( " $SGE_TASK_ID " , 3, 1 )"
+echo "EXECUTING COMMAND: extract_feature_GridWrapper( " $SGE_TASK_ID " , 3, 4 )"
 
 # Set matlab's location on the grid machines
 export LD_LIBRARY_PATH=/home/gen/dpatch/gen_scratch
 
 # EXECUTE classify_attributes!
 cd /home/gen/dpatch/gen_scratch
-$matlabpath -nodesktop -nodisplay -nosplash -r "extract_feature_GridWrapper $SGE_TASK_ID 3 1"
+$matlabpath -nodesktop -nodisplay -nosplash -r "extract_feature_GridWrapper $SGE_TASK_ID 3 4"

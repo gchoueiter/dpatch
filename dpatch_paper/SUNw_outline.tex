@@ -52,7 +52,13 @@ Section 1, Intro:
 (3) What is the big idea behind these representations? How do they relate to bag of words models?
 (4) While there are several proposed methods to discover discriminative patches [examples, citations], we examine an interesting alternative -- having non-expert humans-in-the-loop to tell us which visual elements they think are discriminative. 
 
-
+ 
+% TODO: 
+ - make figures
+ - user interface - maybe look at what locations got voted for most??
+ - example patches auto and human
+ - scene class acc
+ - cat confusion comparison btwn auto and human. 
 
 
 (5) Relation to other human-in-the-loop methods \cite{gingold2012micro, branson2010visual, kovashka2012whittlesearch},. Humans (possibly non expert, crowdsourced humans) are commonly used in vision algorithms at two stages (a) annotation time, either exhaustively annotating a dataset or providing the most informative annotations in an "active learning" framework or (b) test time, coupled with a computational method (e.g. visipedia) to improve human accuracy and / or reduce human effort. In contrast, we put humans in the loop at neither annotation time or test time, but rather at "representation discovery" time. The humans are directly telling the computer which visual elements should be discriminative. This has some similarity to part-based annotation of visual phenomena, except we don't require any explicit semantic meaning for the parts, and in our initial experiments the humans never even see entire images. Putting humans "in the loop" at this stage in a recognition algorithm, is, to the best of our knowledge, never before studied.

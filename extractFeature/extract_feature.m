@@ -175,7 +175,18 @@ tmp_feats = cell(length(flist),1);
 for f = 1:length(flist)
 
     %the loaded files should contain feat and imsize vars
-    tmp_feats(f) = {load(fullfile(GVARS.save_path, flist(f).name))};
+    try
+        tmp_feats(f) = {load(fullfile(GVARS.save_path, flist(f).name))};
+    catch e
+        disp(e.message);
+        disp(e.stack.name);
+        disp(e.stack.line);
+        % I'm assuming this temp file is corrupted. 
+        unix(['rm -f ' fullfile(GVARS.save_path, flist(f).name)]);
+        extract_feature(GVARS.img_name, GVARS.img_path, GVARS.save_path, GVARS.detectors_fname, ...
+                        0, 0, '');
+        return;
+    end
 end
 
 end
