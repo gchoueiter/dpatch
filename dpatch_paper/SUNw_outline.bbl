@@ -28,6 +28,13 @@ A.~Kovashka, D.~Parikh, and K.~Grauman.
 \newblock In {\em Computer Vision and Pattern Recognition (CVPR), 2012 IEEE
   Conference on}, pages 2973--2980. IEEE, 2012.
 
+\bibitem{lazebnik2006beyond}
+S.~Lazebnik, C.~Schmid, and J.~Ponce.
+\newblock Beyond bags of features: Spatial pyramid matching for recognizing
+  natural scene categories.
+\newblock In {\em Computer Vision and Pattern Recognition, 2006 IEEE Computer
+  Society Conference on}, volume~2, pages 2169--2178. IEEE, 2006.
+
 \bibitem{singh2012unsupervised}
 S.~Singh, A.~Gupta, and A.~A. Efros.
 \newblock Unsupervised discovery of mid-level discriminative patches.
