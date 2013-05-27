@@ -19,7 +19,6 @@ gradsums(invalid)=[];
 disp(['threw out ' num2str(sum(invalid)) ' patches']);
 
 totalProcessed = size(features, 1);
-
 labels = ones(size(features, 1), size(detectors.w, 1));
 [unused_labels, unused_acc, decision] = mySvmPredict(labels, ...
     features, detectors);
