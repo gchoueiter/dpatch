@@ -1,3 +1,0 @@
-% This is a script for training svms for all of the human selected
-% patches
-% Called from parse_results.m

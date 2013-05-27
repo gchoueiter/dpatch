@@ -1,7 +1,8 @@
 % gen
 %calculates dpatch feature
 
-function extract_feature(img_name, img_path, save_path, detectors_fname, njobs, isparallel, log_path)
+function extract_feature(img_name, img_path, save_path, detectors_fname, ...
+                         detection_threshold, njobs, isparallel, log_path)
 
 % there are conflicting versions of some files, so this explicitly
 % includes the correct versions
@@ -37,7 +38,7 @@ GVARS.detectionParams = struct( ...
   'selectTopN', false, ...
   'useDecisionThresh', true, ...
   'overlap', 0.4, ...% detections with overlap higher than this are discarded.
-  'fixedDecisionThresh', -1.002);
+  'fixedDecisionThresh', detection_threshold);
 
 %GVARS.img = im2double(imread([img_path img_name]));
 GVARS.img_path = img_path;

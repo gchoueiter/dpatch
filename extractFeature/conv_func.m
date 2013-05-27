@@ -1,9 +1,8 @@
-% this is a slightly different version of TY_conv_func
-%  This runs the conv_func on the input image with the dpatch
-%  specified by patch_ind
+
+%  This runs the conv_func on the input image with the set of dpatch detectors
+
 function  conv_func(img, img_name, feat_save_path, detectors);%[feat, imsize] =
 %   img:    the input image
-%   patch_ind: index of patch to use from npatch
 %   detectors: this contains all the classifiers ad the params from DPatch discovery code
 
 global ds; 

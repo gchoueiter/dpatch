@@ -9,7 +9,10 @@ for class_ind = 1:num_classes
     
     %[beta,b]=primal_svm(0, Y, lambda);
     %score_test(:,class_ind) = K_test*beta+b;
-    libsvm_cl = svmtrain(Y(:), double([(1:length(class_train))' K]), [' -t 4 -s 0 -w-1 1 -w1 ' num2str(length(find(Y==-1))/length(find(Y==1))) ' -c 1.0']) ;
+    libsvm_cl = svmtrain(Y(:), double([(1:length(class_train))' K]), ...
+                        ['-t 4 -s 0 -w-1 1 -w1 ' num2str(length( ...
+                          find(Y==-1))/length(find(Y==1))) ...
+                         ' -c 0.01 -h 1']) ; % this used to be -c 1.0
     ap = mean(libsvm_cl.sv_coef(Y(libsvm_cl.SVs) > 0)) ;
     am = mean(libsvm_cl.sv_coef(Y(libsvm_cl.SVs) < 0)) ;
     if ap < am

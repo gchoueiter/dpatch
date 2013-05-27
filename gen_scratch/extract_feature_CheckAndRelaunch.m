@@ -1,4 +1,4 @@
-function extract_feature_CheckAndRelaunch(rank_str, svm_str)
+function [sum_im_out]= extract_feature_CheckAndRelaunch(rank_str, svm_str)
     rank_ind = str2double(rank_str);
     svm_ind = str2double(svm_str);
     addpath(genpath('/home/gen/dpatch'));
@@ -33,8 +33,8 @@ function extract_feature_CheckAndRelaunch(rank_str, svm_str)
 	    img_path = test_path;
 	    img_name = image;%image(37:end);
             
-            save_path = fullfile(img_path, ['features/dpatch_' ...
-                                ranking_type{rank_ind} dpatch_svm '/']);
+            save_path = fullfile(img_path, ['features/dpatch' dpatch_svm '_'...
+                                ranking_type{rank_ind} '/']);
             
 
             last_stroke = strfind(img_name, '/');
@@ -53,6 +53,11 @@ function extract_feature_CheckAndRelaunch(rank_str, svm_str)
                     unix(['rm -f ' fullfile(save_path, img_name(1:end-4), [img_name(last_stroke:end-4) '.mat'])]);
                 end
                 clear feat;
+            elseif exist(fullfile(save_path, img_name(1:end-4)), 'dir') ...
+                    & ~exist(fullfile(save_path, [img_name(1:end-4) '.mat']), ...
+                             'file')
+                %keyboard
+                unix(['rm -rf ' fullfile(save_path, img_name(1:end-4))]);
             end
 
             if exist(fullfile(save_path, img_name(1:end-4), [img_name(last_stroke:end-4) '.mat']), ...
@@ -86,14 +91,14 @@ function extract_feature_CheckAndRelaunch(rank_str, svm_str)
                     mkdir(logdir);
                 end
 
-                logfileerr = fullfile(log_path, img_name(1:end-4), ['qsub_out.err']);
-                logfileout = fullfile(log_path, img_name(1:end-4), ['qsub_out.out']);
+                logfileerr = fullfile(log_path, img_name(1:end-4), ['qsub_out.err'])
+                logfileout = fullfile(log_path, img_name(1:end-4), ['qsub_out.out'])
 
                 tmpFuncCall = sprintf(['extract_feature_per_image.sh %s ' ...
-                '%s'], num2str(i), rank_str);
+                '%s %s'], num2str(i), rank_str, svm_str);
                 %                keyboard
                 qsub_cmd = ['qsub -N dp' num2str(rand()) ' -l long' ' -e ' logfileerr ' -o ' logfileout ' ' tmpFuncCall];
-                
+                %                keyboard
                 unix(qsub_cmd);
             elseif ~hasFeat(i,1) & ~launchJobs
                     extract_feature(img_name, img_path, save_path, ...
@@ -112,7 +117,9 @@ function extract_feature_CheckAndRelaunch(rank_str, svm_str)
     end
     %keyboard
     fprintf('%d out of %d images calculated so far ...\n', sum(hasFeat > ...
-                                                      0), length(hasFeat));
+                                                      0), ...
+            length(hasFeat));
+    sum_im_out = sum(hasFeat > 0);
     %keyboard
 
 end

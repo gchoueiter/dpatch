@@ -7,11 +7,75 @@ global sc;
 %% If this is parallel, you need to run the function twice. The first
 %% time will end with an error.
 isparallel = 1;
+re_run = 1;
 cd '/home/gen/dpatch/scene_classifier/'
 ranking_type = {'overallcounts', 'posterior', 'nearestneighbors'};
 svm_type = {'linear', 'polynomial', 'rbf', 'sigmoid'};
+
+% VARRY TRAINING EXAMPLES - MAX VAL = 150
+num_train_ex = 100;
+
+%all_perf = cell(3,4);
+%all_ap = cell(3,4);
+%all_perf = zeros(4, 1500, 6);
+%all_ap = zeros(4,1500, 15, 6);
+cur_type_ind =1;
+
+sc.dataset = '/home/gen/dpatch/dataset15.mat';
+load(sc.dataset);
+% set up test/train index for 15 scene dataset
+scene_cats=unique(arrayfun(@(x) x.city,imgs,'UniformOutput', ...
+                           false));
+imgs_train=[]; 
+imgs_test=[];
+train_inds = [];
+test_inds = [];
+for i = 1:length(scene_cats)
+    cat_inds = find(~arrayfun(@(x) isempty(strfind(x.city, scene_cats{i})), ...
+                         imgs));
+    % NOTE: the same imgs that were used for dpatch discovery are re-used
+    % in the scene classifier training set. 
+    train_inds = horzcat(train_inds, cat_inds(1:num_train_ex));  
+    test_inds = horzcat(test_inds, cat_inds(151:end));
+    
+end
+imgs_train = imgs(train_inds);
+imgs_test = imgs(test_inds);
+disp('train and test images!');
+fprintf('num train images %d\n', length(imgs_train)); 
+fprintf('num test images %d\n', length(imgs_test)); 
+
+sc.njobs = 900;
+sc.isparallel = 0;
+sc.log_path = '/data/hays_lab/finder/Discriminative_Patch_Discovery/15scene_classifiers/logs/';
+if(~exist(sc.log_path, 'dir'))
+    mkdir(sc.log_path);    
+end
+
+% for 15 classes dataset
+sc.img_path = '/data/hays_lab/15_scene_dataset/';
+sc.save_path = ['/data/hays_lab/finder/Discriminative_Patch_Discovery/' ...
+                '15scene_classifiers_train_' num2str(num_train_ex) '/'];
+if(~exist(sc.save_path, 'dir'))
+    mkdir(sc.save_path);
+end
+sc.feat_path   = fullfile(sc.img_path, 'features/');
+sc.kernel_path = fullfile(sc.save_path, 'kernels/');
+if(~exist(sc.kernel_path,'dir'))
+    mkdir(sc.kernel_path);
+end
+sc.svm_path = fullfile(sc.save_path, 'svms/');
+if(~exist(sc.svm_path,'dir'))
+    mkdir(sc.svm_path);
+end
+
 for rank = 1:3
-for sub = 1%:4
+for sub = 1:4
+
+    %all_perf = zeros(4,1500,6);%num_feat, num_patches);
+if sub >1 & (rank ==1 | rank ==2)
+    continue;
+end
 data_path = ...%'/data/hays_lab/finder/Discriminative_Patch_Discovery/try2/';
             ['/data/hays_lab/finder/Discriminative_Patch_Discovery/' ...
              '15_scene_patches/' ranking_type{rank} '/'];
@@ -24,27 +88,8 @@ else
     load(fullfile(data_path, ['detectors_' svm_type{sub} '.mat']));
 end
 
-sc.njobs = 900;
-sc.isparallel = 0;
-sc.log_path = '/data/hays_lab/finder/Discriminative_Patch_Discovery/15scene_classifiers/logs/';
-if(~exist(sc.log_path, 'dir'))
-    mkdir(sc.log_path);    
-end
 
-% for 15 classes dataset
-sc.img_path = '/data/hays_lab/15_scene_dataset/';
-sc.save_path = '/data/hays_lab/finder/Discriminative_Patch_Discovery/15scene_classifiers/';
-sc.feat_path   = fullfile(sc.img_path, 'features/');%sc.save_path, 'features/');
-sc.kernel_path = fullfile(sc.save_path, 'kernels/');
-if(~exist(sc.kernel_path,'dir'))
-    mkdir(sc.kernel_path);
-end
-sc.svm_path = fullfile(sc.save_path, 'svms/');
-if(~exist(sc.svm_path,'dir'))
-    mkdir(sc.svm_path);
-end
-sc.dataset = '/home/gen/dpatch/dataset15.mat';
-load(sc.dataset);
+
 if rank == 3
     dpatch_svm_type = ['_' svm_type{sub}];
 else
@@ -61,27 +106,7 @@ if(~exist(sc.save_path, 'dir'))
     mkdir(sc.svm_path);
 end
 
-% set up test/train index for 15 scene dataset
-scene_cats=unique(arrayfun(@(x) x.city,imgs,'UniformOutput', ...
-                           false));
-imgs_train=[]; 
-imgs_test=[];
-train_inds = [];
-test_inds = [];
-for i = 1:length(scene_cats)
-    cat_inds = find(~arrayfun(@(x) isempty(strfind(x.city, scene_cats{i})), ...
-                         imgs));
-    % NOTE: the same imgs that were used for dpatch discovery are re-used
-    % in the scene classifier training set. 
-    train_inds = horzcat(train_inds, cat_inds(1:150));
-    test_inds = horzcat(test_inds, cat_inds(151:end));
-    
-end
-imgs_train = imgs(train_inds);
-imgs_test = imgs(test_inds);
-disp('train and test images!');
-fprintf('num train images %d\n', length(imgs_train)); 
-fprintf('num test images %d\n', length(imgs_test)); 
+
 % set up type of features to use
 n = 1;
 sc.feat(n).name = ['dpatch' dpatch_svm_type];
@@ -100,14 +125,17 @@ num_training_patches = [1 5 10 50 100]; %num patches per category
 num_training_patches(num_training_patches>length(detectors.firstLevModels.info))= length(detectors.firstLevModels.info);
 num_training_patches = unique(num_training_patches);
 
-num_training_patches_used = zeros(size(num_training_patches));
+num_training_patches_used{cur_type_ind} = zeros(size(num_training_patches));
 
 
 % NOTE: this iterates through num_feat number of different features
 %       and num_patches number of training patches
 nind = 1;
+
+
 for num_patches = num_training_patches
     patches_to_include = zeros(length(detectors.firstLevModels.info),1);
+
     for cat = 1:length(scene_cats)
         if isfield(detectors, 'patch_paths')
             cat_inds = find(cell2mat(cellfun(@(x) ~isempty(strfind(x{1}, ...
@@ -124,7 +152,7 @@ for num_patches = num_training_patches
         patches_to_include(cat_inds) = 1;
     end
     patches_to_include = logical(patches_to_include);
-    num_training_patches_used(nind) = sum(patches_to_include);
+    num_training_patches_used{cur_type_ind}(nind) = sum(patches_to_include);
     nind = nind+1;
 
     for num_feat = 1:n
@@ -205,7 +233,7 @@ for num_patches = num_training_patches
                         tmpFuncCall = sprintf( 'svm_one_vs_all_grid_run.sh %s %s',svm_input_load_file, ...
                                                       score_test_save_file);
                         %                keyboard
-                        qsub_cmd = ['qsub -N sc' num2str(rand()) ' -l long' ' -e ' logfileerr ' -o ' logfileout ' ' tmpFuncCall];
+                        qsub_cmd = ['qsub -N sc' num2str(rand()) ' -l short' ' -e ' logfileerr ' -o ' logfileout ' ' tmpFuncCall];
                         unix(qsub_cmd);
                         continue;
             end
@@ -219,7 +247,7 @@ for num_patches = num_training_patches
         C = confusionMatrix(class_test,class_hat');
         disp(sprintf('#train = %.4d num_patces = %d  Performance = %f %%',length(train_inds),num_patches,mean(diag(C))));
         %todo: should I calculate ap too?
-        all_perf(num_feat, num_patches,rank) = mean(diag(C));
+
         for cat = 1:num_classes
             [~,si]=sort(score_test(:, cat),'descend');
             sclass_hat = class_hat(si)';
@@ -242,18 +270,20 @@ for num_patches = num_training_patches
             disp(sprintf('category = %s   Average Precision = %f ', ...
                          scene_cats{cat},ap(cat,1)));
         end
-        all_ap{num_feat,num_patches,rank} = ap;
+        all_ap(num_feat,num_patches, 1:length(ap), cur_type_ind) = ap;
         % save result
         save([sc.svm_path 'SVM_Result_' sc.feat(num_feat).name '_' sc.feat(num_feat).kernel_name '_'...
               sprintf('%.4d',length(train_inds)) sprintf('_%d_%d.mat', ...
-                                                         num_patches,rank)],'class_hat','score_test','confidence', 'C', 'ap');  
+                                                         num_patches, ...
+                                                         rank)],'class_hat','score_test','confidence', 'C', 'ap');  
+        all_perf{cur_type_ind}(num_feat, num_patches) = mean(diag(C));
     else
         load([sc.svm_path 'SVM_Result_' sc.feat(num_feat).name '_' sc.feat(num_feat).kernel_name '_' sprintf('%.4d',length(train_inds)) sprintf('_%d_%d.mat',num_patches,rank)]);
         disp('this svm already exists');
         disp(sprintf('#train = %.4d   Performance = %f %%', ...
                      length(train_inds),mean(diag(C))));
-        all_perf(num_feat, num_patches,rank) = mean(diag(C));
-        all_ap{num_feat,num_patches,rank} = ap;
+        all_perf{cur_type_ind}(num_feat, num_patches) = mean(diag(C));
+        all_ap(num_feat,num_patches, 1:length(ap), cur_type_ind) = ap;
     end
 
     %end num_feat
@@ -264,19 +294,27 @@ end
 
 %keyboard
 save_name = [sc.svm_path 'SVM_Result_' sc.feat(num_feat).name '_' sc.feat(num_feat).kernel_name '_' sprintf('%.4d',length(train_inds)) sprintf('_all_perf_%s.mat',[ranking_type{rank} dpatch_svm_type])];
-all_perf = all_perf(:, num_training_patches,rank);
-all_ap = all_ap(:, num_training_patches,rank);
-save(save_name, 'all_perf', 'all_ap');
+%all_perf = all_perf{rank}{sub}(:, num_training_patches);
+if(exist('all_perf','var'))
+    save(save_name, 'all_perf', 'all_ap', 'num_training_patches_used');
+else
+    re_run = 1;
+end
 
-figure
-plot(num_training_patches_used,all_perf','-s')
-ylabel('Performance (%)')
-xlabel('Number of Patches')
-legend(sc.feat(:).kernel_name, 4)
-keyboard
+% figure
+% plot(num_training_patches_used,all_perf','-s')
+% ylabel('Performance (%)')
+% xlabel('Number of Patches')
+% legend(sc.feat(:).kernel_name, 4)
+% keyboard
 %end subrank
+cur_type_ind = cur_type_ind +1;
 end
 %end rank
+end
+
+if(re_run)
+    %    scene_classifier_main
 end
 catch e
     disp([' scene_classifer_main broke! we are keyboarding out at the place ' ...

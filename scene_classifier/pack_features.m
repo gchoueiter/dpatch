@@ -28,6 +28,7 @@ for i = 1:length(imgs)
     end
     
     %load feature for this image
+%     keyboard
     load(feat_save_path);
     %% TODO: !!!!change this to sameple from each category!!!
 %     keyboard
@@ -52,6 +53,7 @@ for i = 1:length(imgs)
             end        
         else
             feats_cell{i} = feat(patches_to_include);
+            disp(['loading feature for image number ' num2str(i)]);
         end
     catch e
         keyboard;
