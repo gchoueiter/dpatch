@@ -7,6 +7,7 @@ function [features, levels, indexes, gradsums] = unentanglePyramid(pyramid, ...
   %prSize = round(patchCanonicalSize(1) / pyramid.sbins) - 2;
   %pcSize = round(patchCanonicalSize(2) / pyramid.sbins) - 2;
   global ds;
+
   [prSize, pcSize, pzSize, nExtra]=getCanonicalPatchHOGSize(ds.conf.params);
   selFeatures = cell(length(pyramid.features), 1);
   selGradsums = cell(length(pyramid.features), 1);

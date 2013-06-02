@@ -91,6 +91,7 @@ end
 
 function [predictedLabels, accuracy, decision] = doPredictionComposite( ...
   W, B, features, labels, modelFirstLabel)
+
 numFeats = size(features, 1);
 decision = features * W' - repmat(B', numFeats, 1);
 decision = decision .* repmat(modelFirstLabel', numFeats, 1);
