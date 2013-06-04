@@ -55,7 +55,7 @@ end
 % for 15 classes dataset
 sc.img_path = '/data/hays_lab/15_scene_dataset/';
 sc.save_path = ['/data/hays_lab/finder/Discriminative_Patch_Discovery/' ...
-                '15scene_classifiers_SPM_train_' num2str(num_train_ex) '/'];
+                '15scene_classifiers_SPM2_train_' num2str(num_train_ex) '/'];
 if(~exist(sc.save_path, 'dir'))
     mkdir(sc.save_path);
 end
@@ -69,7 +69,7 @@ if(~exist(sc.svm_path,'dir'))
     mkdir(sc.svm_path);
 end
 
-for rank = 3%2:3%1:3
+for rank = 2:3%1:3
 
 for sub = 1%:4
     %all_perf = zeros(4,1500,6);%num_feat, num_patches);
@@ -136,7 +136,7 @@ num_training_patches_used{cur_type_ind} = zeros(size(num_training_patches));
 
 nind = 1;
 % calculating all feature matricies in advance to decease loading time
-for num_patches = num_training_patches_per_cat
+for num_patches = num_training_patches_per_cat%[1 5 10 50 100];
 
     patches_to_include = zeros(length(detectors.firstLevModels.info),1);
     disp(sprintf('%s features are loading...', ['dpatch' dpatch_svm_type])); 
@@ -163,22 +163,23 @@ for num_patches = num_training_patches_per_cat
     % for each scene category, i.e. dpatch_feat_matrix = [N*indv_dpatch_feature_vector_size*15 x num_images]
     % does feature matrix exist?
 
-    feat_matrix_name = sprintf('%s_image_features_num_patches_%d.mat', [['dpatch' dpatch_svm_type] ...
+    feat_matrix_name = sprintf('%s_image_spm_features_num_patches_%d.mat', [['dpatch' dpatch_svm_type] ...
                         '_' ranking_type{rank}], num_patches);
-keyboard
-    if(~exist(fullfile(sc.feat_path,feat_matrix_name), 'file'))
+disp(feat_matrix_name);
+    if(~exist(fullfile(sc.save_path,feat_matrix_name), 'file'))
 
         tic;
+        %change this to be the number of levels of resolution
         feature_vector = pack_features_SPM([['dpatch' dpatch_svm_type] '_' ...
-                            ranking_type{rank}],imgs,patches_to_include);
+                            ranking_type{rank}],imgs, 19,patches_to_include);
 
         toc;
         disp(['this is how big the feature matrix is for ' ...
               num2str(num_patches)]);
         size(feature_vector)
-        save(fullfile(sc.feat_path,feat_matrix_name), 'feature_vector', '-v7.3');
+        save(fullfile(sc.save_path,feat_matrix_name), 'feature_vector', '-v7.3');
     else
-        load(fullfile(sc.feat_path,feat_matrix_name));
+        load(fullfile(sc.save_path,feat_matrix_name));
     end
     disp(sprintf('%s features are packed', ['dpatch' dpatch_svm_type]));
     
@@ -298,10 +299,11 @@ keyboard
         all_perf{cur_type_ind}(num_feat, num_patches) = mean(diag(C));
         all_ap(num_feat,num_patches, 1:length(ap), cur_type_ind) = ap;
     end
-
+disp(['done with num feat' num2str(num_feat)]);
+%keyboard
     %end num_feat
     end
-
+disp(['done with num feat' num2str(num_patches)]);
 %end num_patches
 end
 
@@ -322,7 +324,7 @@ end
 % legend(sc.feat(:).kernel_name, 4)
 % keyboard
 %end subrank
-disp(['finished with rank ' num2str(rank) ' subrank ' num2str(subrank)]);
+disp(['finished with rank ' num2str(rank) ' subrank ' num2str(sub)]);
 cur_type_ind = cur_type_ind +1;
 end
 %end rank
