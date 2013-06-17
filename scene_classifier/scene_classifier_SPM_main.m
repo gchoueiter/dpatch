@@ -71,7 +71,7 @@ end
 
 for rank = 2:3%1:3
 
-for sub = 1%:4
+for sub = [1 3]%1:4
     %all_perf = zeros(4,1500,6);%num_feat, num_patches);
 if sub >1 & (rank ==1 | rank ==2)
     continue;
@@ -141,7 +141,7 @@ for num_patches = num_training_patches_per_cat%[1 5 10 50 100];
     patches_to_include = zeros(length(detectors.firstLevModels.info),1);
     disp(sprintf('%s features are loading...', ['dpatch' dpatch_svm_type])); 
     for cat = 1:length(scene_cats)
-        if exist('patch_paths', 'var')
+        if (exist('patch_paths', 'var') && (rank == 1 || rank ==2))
             cat_inds = find(cell2mat(cellfun(@(x) ~isempty(strfind(x{1}, ...
                                                               scene_cats{cat})),patch_paths, 'UniformOutput', 0)));
         else
@@ -156,6 +156,7 @@ for num_patches = num_training_patches_per_cat%[1 5 10 50 100];
         patches_to_include(cat_inds) = 1;
     end
     patches_to_include = logical(patches_to_include);
+    
     num_training_patches_used{cur_type_ind}(nind) = sum(patches_to_include);
     nind = nind+1;
     % pack features

@@ -22,7 +22,7 @@
 \usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
 
 
-%\cvprfinalcopy % *** Uncomment this line for the final submission
+\cvprfinalcopy % *** Uncomment this line for the final submission
 
 \def\cvprPaperID{39} % *** Enter the CVPR Paper ID here
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
@@ -42,7 +42,7 @@
 \maketitle
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-  Identifying the distinctive parts of an image is a challenging task for computer vision. In contrast to previous methods, we use human participants to discover mid-level discriminative features. Amazon Mechanical Turk (AMT) workers filter groups of patches to identify clusters that have strong visual and semantic similarity.  We show that SVMs trained from human-defined discriminative patches outperform that patch classifiers discovered by Singh et al. and Doersch et al. \cite{singh2012unsupervised, doersch2012makes} when used as features for classification on the 15 scene dataset \cite{lazebnik2006beyond}.
+  Identifying the distinctive parts of an image is a challenging task for computer vision. In contrast to previous methods, we use human participants to discover mid-level discriminative features. Amazon Mechanical Turk (AMT) workers filter groups of patches to identify clusters that have strong visual and semantic similarity.  We show that SVMs trained from human-defined discriminative patches outperform the patch classifiers discovered by Singh et al. and Doersch et al. \cite{singh2012unsupervised, doersch2012makes} when used as features for classification on the 15 scene dataset \cite{lazebnik2006beyond}.
 
 \end{abstract}
 
@@ -72,7 +72,7 @@ Other human-in-the-loop methods such as \cite{gingold2012micro, branson2010visua
 %
 %What if the human filtered patches are consistent concepts, but they're not close enough together in the feature space? Can we do an optimization to translate (or rotate, or scale) each example in order to maximize their similarity in feature space before training the classifier? Can we train a non-linear classifier?
 
-Our starting point for building human-in-the-loop patches is the automatic method presented in Singh et al. We first find candidate patches within the 15 scene dataset \cite{lazebnik2006beyond} using the code of \cite{singh2012unsupervised, doersch2012makes}. The algorithm selects a 1200 random patches from each category and for each patch finds its 24 nearest neighbors. Each random patch and its nearest neighbors are a candidate discriminative patch model. Individual patches are 80x80 pixel windows represented as 2112 dimensional HoG features.
+Our starting point for building human-in-the-loop patches is the automatic method presented in Singh et al. We first find candidate patches within the 15 scene dataset \cite{lazebnik2006beyond} using the code of \cite{singh2012unsupervised, doersch2012makes}. The algorithm selects 1200 random patches from each category and for each patch finds its 24 nearest neighbors. Each random patch and its nearest neighbors are a candidate discriminative patch model. Individual patches are 80x80 pixel windows represented as 2112 dimensional HoG features.
 
 At this point the Singh et al. use an iterative cross-validation method to discover sets of 5 patches that when used to train a linear SVM result in discriminatively powerful classifiers. Instead of this computationaly expensive process, we present AMT workers with a page showing a group of 25 nearest neighbor patches. We create a patch selection task for 400 randomly selected patch groups from each category in the 15 scene dataset. Our user interface is shown in Fig. \ref{fig:ui}.
 
@@ -107,7 +107,7 @@ We discard redundant responses where the selected patches are nearly the same an
 
 %In the algorithm used for automatic patch discovery in \cite{singh2012unsupervised}, the models for the discriminative patches were trained using linear SVMs. Because the pipeline for building patch models from human responses was so much shorter, we trained the models using linear SVM and sigmoid SVMs.
 
-After all of the discriminative patches for one of the 15 scene categories are identified, we also use a different method than \cite{singh2012unsupervised} to select which discriminative patches to use in our feature library. Singh et al. suggest ranking the output discriminative patches by the posterior probability that a given patch will fire in the category from which it was discovered. We use this method to create the features used in Fig. \ref{fig:results}. Instead of ranking the human patches, we simply selected them at random from the available library of patches discovered from the human responses. No ranking was used for the human patches.
+%After all of the discriminative patches for one of the 15 scene categories are identified, we also use a different method than \cite{singh2012unsupervised} to select which discriminative patches to use in our feature library. Singh et al. suggest ranking the output discriminative patches by the posterior probability that a given patch will fire in the category from which it was discovered. We use this method to create the features used in Fig. \ref{fig:results}. Instead of ranking the human patches, we simply selected them at random from the available library of patches discovered from the human responses. No ranking was used for the human patches.
 
 \section{Results for Scene Classification}
 Figure \ref{fig:results} shows the performance of scene classification on the 15 scene dataset using automatically discovered and human-in-the-loop discriminative patch models. In the case of human-in-the-loop patches, we tried both linear and non-linear SVM patch classifiers. Each set of discriminative patch classifier generates a ``bag of parts'' histogram for every image which encodes how often a particular patch was found. A second SVM is trained to classify images into scene categories based on these ``bags of parts''.  We set a detection threshold at a confidence of -1.0, as suggested in \cite{singh2012unsupervised}. An equal number of patches are selected from each scene category. Fig. \ref{fig:results} shows that the patches discovered using human intervention greatly outperform the automatically discovered patches for scene classification on the 15 scene dataset.
@@ -117,8 +117,11 @@ Figure \ref{fig:results} shows the performance of scene classification on the 15
 \centering
 % \begin{subfigure}[b]{0.45\textwidth}
 % \centering
- \includegraphics[width=0.45\textwidth, height=0.15\textheight]{perf.png}
- \caption{\small\textit{Scene Classification Performance of Human and Automatic Patches on the 15 scene dataset.}  Overall the sigmoid kernel human patches performs achieves the best performance at 81.89\% accuracy; the linear kernel human patches achieve 79.11\%, and the automatic patches top out at 71.82.}
+ \includegraphics[width=0.5\textwidth]{perf_spm_lvl1.png}
+ \caption{\small\textit{Scene Classification Performance of Human and Automatic Patches on the 15 scene dataset.} }
+
+%Overall the sigmoid kernel human patches performs achieves the best performance at 81.89\% accuracy; the linear kernel human patches achieve 79.11\%, and the automatic patches top out at 71.82.
+
 \vspace{-4mm}
 % \caption{\textit{Scene classification accuracy for the 15 scene dataset.} These trends show the increasing performance of scene classifiers trained on discriminative patch features of increasing dimensionality. Each trend line is the best performing type of scene classifier for the type of discriminative patch listed. Different kernel types performed the most successfully for the automatic and human discovered patches. For comparison, SVM models for the human patches were trained using linear classifiers as were the automatic patches \cite{singh2012unsupervised}. We also trained the human patch classifiers using a sigmoid kernel, which resulted in patches that performed slightly better as features. In all cases the mid-level feature used for scene classification is a histogram of the number of times each patch fired. From right to left the feature is increasing in the number of patches used. An equal number of patches was selected from each scene category. For the automatic patches, there were not always an equal number of patches available for each category, due to the constraints of the automatic discover process. When an equal number were not available, all available patches are used.}
 % \label{fig:perf}
@@ -126,7 +129,7 @@ Figure \ref{fig:results} shows the performance of scene classification on the 15
 %\begin{subfigure}[b]{0.45\textwidth}
 % \centering
 % \includegraphics[width=\textwidth]{perf_overlay_graph.png}
-% \caption{\textit{Range of scene classification accuracies for the 15 scene dataset using different kernel types.} The range of values for each color shown is the range of classification accuracies using L1, L2, $\chi^{2}$ and RBF kernels to train the scene category classifiers. Overall the sigmoid kernel human patches performs achieves the best performance at 81.89\% accuracy; the linear kernel human patches achieve 79.11\%, and the automatic patches top out at 71.82.}
+% \caption{\textit{Range of scene classification accuracies for the 15 scene dataset using different kernel types.} %The range of values for each color shown is the range of classification accuracies using L1, L2, $\chi^{2}$ and RBF kernels to train the scene category classifiers. Overall the sigmoid kernel human patches performs achieves the best performance at 81.89\% accuracy; the linear kernel human patches achieve 79.11\%, and the automatic patches top out at 71.82.}
 % \label{fig:perf_overlay}
 % \end{subfigure}
 
@@ -145,7 +148,7 @@ Figure \ref{fig:results} shows the performance of scene classification on the 15
 %\end{figure}
 
 
-Interestingly, our human patch discovery method is arguably cheaper to implement than the automatic method. In our experience, it took 300 CPU hours plus 1200 AMT Human Intelligence tasks to discover patches for one scene category. It took us roughly 6000 CPU hours to automatically discover discriminative patches for one category. Using the default cost of an Amazon AWS instance (\$0.06 per instance per hour) and the cost of our AMT HITs (\$0.04 per HIT), it would cost \$66 to discover the human patches and \$360 to discover the automatic patches for one of the 15 scene categories. In light of the efficiency and accuracy shown by human patch discovery, we believe that using humans to build mid-level patches deserves further inquiry.
+Interestingly, our human patch discovery method is arguably cheaper to implement than the automatic method. In our experience, it took 300 CPU hours plus 1200 AMT Human Intelligence tasks to discover patches for one scene category using our method. It took us roughly 6000 CPU hours to automatically discover discriminative patches for one category. Our method is approximately 20x faster than the method in \cite{singh2012unsupervised}. Using the default cost of an Amazon AWS instance (\$0.06 per instance per hour) and the cost of our AMT HITs (\$0.04 per HIT), it would cost \$66 to discover the human patches and \$360 to discover the automatic patches for one of the 15 scene categories. In light of the efficiency and accuracy shown by human patch discovery, we believe that using humans to build mid-level patches deserves further inquiry.
 
 %\textbf{Acknowledgements.} We thank Hari Narayanan (Brown Univ.) for his insights and contributions in the data annotation process. Genevieve Patterson is supported by the Department of Defense (DoD) through the National Defense Science \& Engineering Graduate Fellowship (NDSEG) Program. This work is also funded by NSF CAREER Award 1149853 to James Hays. 
 

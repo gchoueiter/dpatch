@@ -39,7 +39,7 @@ function [sum_im_out]= makeSPMFeature_CheckAndRelaunch(rank_str, svm_str)
             last_stroke = last_stroke(end);
             hasFeat(i,1) = exist(fullfile(save_path, [img_name(1:end-4) '_spm_lvl19.mat']),'file');
 
-            launchJobs = 1;
+            launchJobs = 0;
             if(~hasFeat(i,1) & launchJobs)
 
                 %keyboard
@@ -50,9 +50,9 @@ function [sum_im_out]= makeSPMFeature_CheckAndRelaunch(rank_str, svm_str)
                     mkdir(logdir);
                 end
 
-                logfileerr = fullfile(log_path, img_name(1:end-4), ['qsub_out.err'])
+                logfileerr = fullfile(log_path, img_name(1:end-4), ['qsub_out' rank_str svm_str '.err'])
                 logfileout = fullfile(log_path, img_name(1:end-4), ...
-                                      ['qsub_out.out'])
+                                      ['qsub_out' rank_str svm_str '.out'])
 %makeVisEntDetFeatures(img_name, img_path, save_path, detectors_fname,  detection_threshold, overwrite)
 
                 tmpFuncCall = sprintf(['makeSPMFeature_GridRun_perImg.sh %s ' ...

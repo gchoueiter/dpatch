@@ -6,8 +6,8 @@
 function [decision, levels, pyra] = makeVisEntDetFeature(img_name, img_path, save_path, detectors_fname,  detection_threshold, overwrite)
 
     % check if feat file exists, overwrite depending
-if(~overwrite & exist(fullfile(save_path,[img_name(1:end-4) '_raw.mat']), ...
-                      'file'))
+if( exist(fullfile(save_path,[img_name(1:end-4) '_raw.mat']), ...
+                      'file'))%~overwrite &
     disp(['Raw HOG feature was already calculated: ' img_name]);
     load(fullfile(save_path,[img_name(1:end-4) '_raw.mat']));
     return;

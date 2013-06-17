@@ -23,6 +23,8 @@ end
 %end
 indexes = zeros(rLim * cLim, 2);
 featInd = 0;
+% disp('in getFeaturesForLevel');
+% keyboard
 for j = 1 : cLim
   for i = 1 : rLim
     feat = level(i:i+prSize-1, j:j+pcSize-1, :);

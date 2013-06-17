@@ -11,7 +11,7 @@ pcSize = round(patchCanonicalSize(2) / pyramid.sbins) - 2;
 [features, levels, indexes,gradsums] = unentanglePyramid(pyramid, ...
   patchCanonicalSize);
 
-invalid=[];%(gradsums<9);
+invalid=(gradsums<9);
 features(invalid,:)=[];
 levels(invalid)=[];
 indexes(invalid,:)=[];

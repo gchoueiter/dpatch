@@ -16,7 +16,8 @@ function [features, levels, indexes, gradsums] = unentanglePyramid(pyramid, ...
   selLevel = cell(length(pyramid.features), 1);
   totalProcessed = 0;
   %im=RGB2Lab(im);
-
+% disp('calcing features for each lvl of pyra');
+% keyboard
   for i = 1 : length(pyramid.features)
     [feats, indexes, selGradsums{i,1}] = getFeaturesForLevel(pyramid.features{i}, ds.conf.params, prSize, ...
       pcSize,pzSize,nExtra,pyramid.gradimg{i});
